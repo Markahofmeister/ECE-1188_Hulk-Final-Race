@@ -1,0 +1,7 @@
+# Ignore Everything
+/*
+
+# Except...
+!.gitignore
+!_*
+!inc/
