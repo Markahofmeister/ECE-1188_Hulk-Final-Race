@@ -449,7 +449,7 @@ int Program21_1(void){ //Program21_1(void){ // example program 21.1, RSLK1.1
   }
 }
 // assumes track is 500mm
-int32_t Mode=0; // 0 stop, 1 run
+int32_t Mode=1; // 0 stop, 1 run
 int32_t Error;
 int32_t Ki=1;  // integral controller gain
 int32_t Kp=4;  // proportional controller gain //was 4
@@ -461,7 +461,7 @@ int32_t SetPoint = 250; // mm //was 250
 int32_t LeftDistance,CenterDistance,RightDistance; // mm
 #define TOOFAR 400 // was 400
 
-#define PWMNOMINAL 5000 // was 2500
+#define PWMNOMINAL 2500 // was 2500
 #define SWING 2000 //was 1000
 #define PWMMIN (PWMNOMINAL-SWING)
 #define PWMMAX (PWMNOMINAL+SWING)
@@ -549,12 +549,13 @@ void Pause(void){int i;
 void main(void){ // wallFollow wall following implementation
   int i = 0;
   uint32_t channel = 1;
+  Motor_Init();
   DisableInterrupts();
   Clock_Init48MHz();
   Bump_Init();
   LaunchPad_Init(); // built-in switches and LEDs
   Motor_Stop(); // initialize and stop
-  Mode = 0;
+  Mode = 1;
   I2CB1_Init(30); // baud rate = 12MHz/30=400kHz
   Init();
   Clear();
@@ -583,10 +584,10 @@ void main(void){ // wallFollow wall following implementation
   LPF_Init2(100,8);
   LPF_Init3(100,8);
   UR = UL = PWMNOMINAL; //initial power
-  Pause();
+  //Pause();
   EnableInterrupts();
   while(1){
-    if(Bump_Read()){ // collision
+    if(Bump_Read() != 237){ // collision
       Mode = 0;
       Motor_Stop();
       Pause();
