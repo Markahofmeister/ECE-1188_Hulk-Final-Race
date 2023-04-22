@@ -58,8 +58,8 @@ policies, either expressed or implied, of the FreeBSD Project.
 #include "../inc/FFT.h"
 // Select one of the following three output possibilities
 // define USENOKIA
-#define USEOLED 1
-//#define USEUART
+//#define USEOLED 1
+#define USEUART 1
 
 #ifdef USENOKIA
 // this batch configures for LCD
@@ -116,6 +116,7 @@ uint32_t Noises[3];
 uint32_t TxChannel;
 uint32_t StartTime;
 uint32_t TimeToConvert; // in msec
+
 bool pollDistanceSensor(void){
   if(OPT3101_CheckDistanceSensor()){
     TxChannel = OPT3101_GetMeasurement(Distances,Amplitudes);
@@ -123,7 +124,9 @@ bool pollDistanceSensor(void){
   }
   return false;
 }
+
 // SysTick is just for debug profile, it can be removed
+// Seems to be just for reading optical sensors.
 void main1(void){ // interrupt implementation
   int i = 0;
   uint32_t channel = 1;
@@ -191,6 +194,7 @@ void main1(void){ // interrupt implementation
   }
 }
 
+// Seems to be just for reading optical sensors.
 void main2(void){ // busy-wait implementation
   uint32_t channel = 1;
   Clock_Init48MHz();
@@ -239,6 +243,7 @@ int32_t Left(int32_t left){
   return (1247*left)/2048 + 22;
 }
 
+// Seems to test out filtering of distances
 void mainUNO(void){ // main3interrupt implementation
   int i = 0;
   uint32_t channel = 1;
@@ -341,6 +346,7 @@ uint32_t Average;  // average of data = sum/N
 uint32_t Variance; // =sum2/(N-1)
 uint32_t Sigma;    // standard deviation = sqrt(Variance)
 
+// Seems to test FIR Filter implementation and PMF
 int Program21_1(void){ //Program21_1(void){ // example program 21.1, RSLK1.1
   int32_t n; uint32_t min,max,s=1;
   int i = 0;
@@ -449,6 +455,9 @@ int Program21_1(void){ //Program21_1(void){ // example program 21.1, RSLK1.1
   }
 }
 
+/*
+ * Below is the code that actually drives motors to do wall following
+ */
 // assumes track is 500mm
 int32_t Mode=1; // 0 stop, 1 run
 int32_t Error;
@@ -466,6 +475,9 @@ int32_t LeftDistance,CenterDistance,RightDistance; // mm
 #define SWING 2000 //was 1000
 #define PWMMIN (PWMNOMINAL-SWING)
 #define PWMMAX (PWMNOMINAL+SWING)
+
+// This (should?) keep the robot in the middle of the track.
+// Original calibration is for a track wdith of 500mm, not BNDM's 2000mm.
 void Controller(void){ // runs at 100 Hz
   if(Mode){
     if((LeftDistance>DESIRED)&&(RightDistance>DESIRED)){
@@ -490,6 +502,8 @@ void Controller(void){ // runs at 100 Hz
   }
 }
 
+// This allows the robot to follow a wall to its right
+// Original calibration is for a track wdith of 500mm, not BNDM's 2000mm.
 void Controller_Right(void){ // runs at 100 Hz
   if(Mode){
     if((RightDistance>DESIRED)){
@@ -524,6 +538,7 @@ void Controller_Right(void){ // runs at 100 Hz
   }
 }
 
+//For the bump sensors
 void Pause(void){int i;
   while(Bump_Read()){ // wait for release
     Clock_Delay1ms(200); LaunchPad_Output(0); // off
@@ -635,6 +650,11 @@ void main(void){ // wallFollow wall following implementation
     WaitForInterrupt();
   }
 }
+
+
+
+
+// This looks like a more memory-friendly implementation
 // MSP432 memory limited to q=11, N=2048
 #define q   8       /* for 2^8 points */
 #define NN   (1<<q)  /* 256-point FFT, iFFT */
