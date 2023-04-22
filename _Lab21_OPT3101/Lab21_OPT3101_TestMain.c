@@ -448,18 +448,19 @@ int Program21_1(void){ //Program21_1(void){ // example program 21.1, RSLK1.1
     else s = 1;
   }
 }
+
 // assumes track is 500mm
 int32_t Mode=1; // 0 stop, 1 run
 int32_t Error;
 int32_t Ki=1;  // integral controller gain
-int32_t Kp=4;  // proportional controller gain //was 4
+int32_t Kp=2;  // proportional controller gain //was 4
 int32_t UR, UL;  // PWM duty 0 to 14,998
 
-#define TOOCLOSE 200 //was 200
-#define DESIRED 250 //was 250
-int32_t SetPoint = 250; // mm //was 250
+#define TOOCLOSE 800 //was 200
+#define DESIRED 1000 //was 250
+int32_t SetPoint = 1000; // mm //was 250
 int32_t LeftDistance,CenterDistance,RightDistance; // mm
-#define TOOFAR 400 // was 400
+#define TOOFAR  // was 400
 
 #define PWMNOMINAL 2500 // was 2500
 #define SWING 2000 //was 1000
@@ -619,7 +620,8 @@ void main(void){ // wallFollow wall following implementation
       OPT3101_StartMeasurementChannel(channel);
       i = i + 1;
     }
-    Controller_Right();
+    //Controller_Right();
+    Controller();
     if(i >= 100){
       i = 0;
       SetCursor(3, 5);
