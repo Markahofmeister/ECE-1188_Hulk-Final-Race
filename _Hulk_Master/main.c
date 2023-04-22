@@ -183,6 +183,8 @@ void PORT4_IRQHandler(void){
     Motor_Stop();
     Clock_Delay1ms(1000);         // Must wait 1 second, as per project requirements
 
+    while(1);               //Remove and implement crash recovery
+
     /*                            // How to deal with a crash?
     Motor_Backward(2500,2500);
     Clock_Delay1ms(1000);
@@ -190,8 +192,29 @@ void PORT4_IRQHandler(void){
 
 }
 
+// Function to organize UART initialization, clearing, and printing of Intitialization data
+void UART_Init_Print(void) {
+      Init();                   // UART baud rate = 115,200
+      Clear();
+      OutString("OPT3101");
+      SetCursor(0, 1);
+      OutString("L=");
+      SetCursor(0, 2);
+      OutString("C=");
+      SetCursor(0, 3);
+      OutString("R=");
+      SetCursor(0, 4);
+      OutString("Wall follow");
+      SetCursor(0, 5);
+      OutString("SP=");
+      SetCursor(0, 6);
+      OutString("Er=");
+      SetCursor(0, 7);
+      OutString("U =");
+}
+
 /*
- * The parameters are used for a 500mm width track, so ths
+ * The parameters are used for a 500mm width track, so this must be changed/tunes
  */
 void main(void){ // wallFollow wall following implementation
 
@@ -207,36 +230,25 @@ void main(void){ // wallFollow wall following implementation
   Motor_Stop(); // initialize and stop
 
   Mode = 1;
-  I2CB1_Init(30); // baud rate = 12MHz/30=400kHz
-  Init();
-  Clear();
-  OutString("OPT3101");
-  SetCursor(0, 1);
-  OutString("L=");
-  SetCursor(0, 2);
-  OutString("C=");
-  SetCursor(0, 3);
-  OutString("R=");
-  SetCursor(0, 4);
-  OutString("Wall follow");
-  SetCursor(0, 5);
-  OutString("SP=");
-  SetCursor(0, 6);
-  OutString("Er=");
-  SetCursor(0, 7);
-  OutString("U =");
-  OPT3101_Init();
+  I2CB1_Init(30);           // I2C baud rate = 400kHz
+  UART_Init_Print();        // UART baud rate = 115,200
+
+  OPT3101_Init();           // Setup OPT3101
   OPT3101_Setup();
   OPT3101_CalibrateInternalCrosstalk();
   OPT3101_ArmInterrupts(&TxChannel, Distances, Amplitudes);
-  TxChannel = 3;
+  TxChannel = 3;            //Begin measurement of channel 3
   OPT3101_StartMeasurementChannel(channel);
-  LPF_Init(100,8);
+
+  LPF_Init(100,8);          // Setup FIR Filter
   LPF_Init2(100,8);
   LPF_Init3(100,8);
-  UR = UL = PWMNOMINAL; //initial power
+
+  UR = UL = PWMNOMINAL;     //initial power
 
   EnableInterrupts();
+
+  // Begin Main loop
   while(1){
     if(TxChannel <= 2){ // 0,1,2 means new data
       if(TxChannel==0){
@@ -278,6 +290,6 @@ void main(void){ // wallFollow wall following implementation
     }
 
     WaitForInterrupt();
-  }
+  }     //end main loop
 }
 

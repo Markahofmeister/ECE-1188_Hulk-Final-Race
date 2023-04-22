@@ -45,6 +45,7 @@ policies, either expressed or implied, of the FreeBSD Project.
 
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 #include "UART0.h"
 #include "msp.h"
 
@@ -70,8 +71,8 @@ void UART0_Init(void){
   // bit0=1,       hold logic in reset state while configuring
   EUSCI_A0->CTLW0 = 0x00C1;
                                  // set the baud rate
-                                 // N = clock/baud rate = 12,000,000/115,200 = 104.1667
-  EUSCI_A0->BRW = 104;           // UCBR = baud rate = int(N) = 104
+                                 // N = clock/baud rate = 12,000,000/115,200 = 104
+  EUSCI_A0->BRW = 104;           // UCBR = baud rate = int(N) = 1250
   EUSCI_A0->MCTLW &= ~0xFFF1;    // clear first and second modulation stage bit fields
   P1->SEL0 |= 0x0C;
   P1->SEL1 &= ~0x0C;             // configure P1.3 and P1.2 as primary module function
@@ -95,7 +96,8 @@ char UART0_InChar(void){
 void UART0_OutChar(char letter){
     // you write this as part of Lab 11
 
-
+  while((EUSCI_A0->IFG&0x02) == 0);
+  EUSCI_A0->TXBUF = letter;
 }
 
 //------------UART0_OutString------------
@@ -105,7 +107,10 @@ void UART0_OutChar(char letter){
 void UART0_OutString(char *pt){
     // you write this as part of Lab 11
 
-
+  while(*pt){
+    UART0_OutChar(*pt);
+    pt++;
+  }
 }
 
 //------------UART0_InUDec------------
@@ -146,7 +151,14 @@ char character;
 // Output: none
 // Variable format 1-10 digits with no space before or after
 void UART0_OutUDec(uint32_t n){
-    // you write this as part of Lab 11
+
+    // This function uses recursion to convert decimal number
+    //   of unspecified length as an ASCII string
+      if(n >= 10){
+        UART0_OutUDec(n/10);
+        n = n%10;
+      }
+      UART0_OutChar(n+'0'); /* n is between 0 and 9 */
 
 
 }
