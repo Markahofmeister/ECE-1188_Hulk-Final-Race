@@ -149,16 +149,16 @@ void Controller_Right(void){ // runs at 100 Hz
   }
 }
 
-void Pause(void){int i;
-  while(Bump_Read()){ // wait for release
+/*void Pause(void){int i;
+  while(BumpInt_Read()){ // wait for release
     Clock_Delay1ms(200); LaunchPad_Output(0); // off
     Clock_Delay1ms(200); LaunchPad_Output(1); // red
   }
-  while(Bump_Read()==0){// wait for touch
+  while(BumpInt_Read()==0){// wait for touch
     Clock_Delay1ms(100); LaunchPad_Output(0); // off
     Clock_Delay1ms(100); LaunchPad_Output(3); // red/green
   }
-  while(Bump_Read()){ // wait for release
+  while(BumpInt_Read()){ // wait for release
     Clock_Delay1ms(100); LaunchPad_Output(0); // off
     Clock_Delay1ms(100); LaunchPad_Output(4); // blue
   }
@@ -169,6 +169,24 @@ void Pause(void){int i;
   // restart Jacki
   UR = UL = PWMNOMINAL;    // reset parameters
   Mode = 1;
+
+}*/
+
+// triggered on touch, falling edge
+// Indicates a crash
+void PORT4_IRQHandler(void){
+
+    uint8_t bsMask = 0xED;
+    Clock_Delay1us(10);         // software debounce
+    P4->IFG &= ~bsMask;         // acknowledge and clear flag
+    P2->OUT ^= 0x02;             // toggle red LED on RGB LED
+    Motor_Stop();
+    Clock_Delay1ms(1000);         // Must wait 1 second, as per project requirements
+
+    /*                            // How to deal with a crash?
+    Motor_Backward(2500,2500);
+    Clock_Delay1ms(1000);
+    */
 
 }
 
@@ -187,6 +205,7 @@ void main(void){ // wallFollow wall following implementation
   LaunchPad_Init(); // built-in switches and LEDs
 
   Motor_Stop(); // initialize and stop
+
   Mode = 1;
   I2CB1_Init(30); // baud rate = 12MHz/30=400kHz
   Init();
@@ -216,14 +235,9 @@ void main(void){ // wallFollow wall following implementation
   LPF_Init2(100,8);
   LPF_Init3(100,8);
   UR = UL = PWMNOMINAL; //initial power
-  //Pause();
+
   EnableInterrupts();
   while(1){
-    if(Bump_Read() != 237){             // collision
-      Mode = 0;
-      Motor_Stop();
-      Pause();
-    }
     if(TxChannel <= 2){ // 0,1,2 means new data
       if(TxChannel==0){
         if(Amplitudes[0] > 1000){
