@@ -52,8 +52,8 @@ policies, either expressed or implied, of the FreeBSD Project.
 #include "..\inc\bump.h"
 #include "..\inc\clock.h"
 #include "..\inc\blinker.h"
-uint32_t MotorFast=4000; // PWM for fast motions, out of 15000
-uint32_t MotorSlow=2000; // PWM for slow motions, out of 15000
+uint32_t MotorFast=7500; // PWM for fast motions, out of 15000
+uint32_t MotorSlow=7500; // PWM for slow motions, out of 15000
 void Odometry_SetPower(uint32_t fast, uint32_t slow){
   MotorFast=fast; ///< PWM for fast motions, out of 15000
   MotorSlow=slow;
@@ -197,6 +197,24 @@ void Display(void){
   SSD1306_SetCursor(0,5); SSD1306_OutString("y(mm)= "); SSD1306_OutSFix1(MyY/1000);
   SSD1306_SetCursor(0,6); SSD1306_OutString("th(deg)=");SSD1306_OutSFix1((1800*MyTheta)/8192);
 }
+
+void Display_Serial(void){
+  switch(Action){
+    case ISSTOPPED: printf("\nStopped"); break;
+    case GOFORWARD: printf("\nForward"); break;
+    case HARDLEFT:  printf("\nLeft"); break;
+    case HARDRIGHT: printf("\nRight"); break;
+    case SOFTLEFT:  printf("\nLeft"); break;
+    case SOFTRIGHT: printf("\nRight"); break;
+  }
+  printf("\nleft= %d ",LeftSteps);
+  printf("\nright= %d ",RightSteps);
+  printf("\nError= %d ",Error);
+  printf("\nx(mm)= %d ",MyX/1000);
+  printf("\ny(mm)= %d ",MyY/1000);
+  printf("\nth(deg)= %d ",(1800*MyTheta)/8192);
+}
+
 void WaitUntilBumperTouched(void){uint32_t data;
   uint32_t count = 10;
   do{// wait for touch

@@ -175,6 +175,15 @@ void UpdatePosition(void);
 void Display(void);
 
 /**
+ * Show current state on serial
+ * @param none
+ * @return none
+ * @note uses SSD1306.c
+ * @brief OLED output
+ */
+void Display_Serial(void);
+
+/**
  * Wait until bumper touched
  * @param none
  * @return none
