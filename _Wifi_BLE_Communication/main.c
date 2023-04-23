@@ -81,9 +81,9 @@
  * Values for below macros shall be modified per the access-point's (AP) properties
  * SimpleLink device will connect to following AP when the application is executed
  */
-#define SSID_NAME       "1PittBitt"       /* Access point name to connect to. */
+#define SSID_NAME       "ECE DESIGN LAB 2.4"       /* Access point name to connect to. */
 #define SEC_TYPE        SL_SEC_TYPE_WPA_WPA2     /* Security type of the Access point */
-#define PASSKEY         "b3n3dum!"   /* Password in case of secure AP */
+#define PASSKEY         "ecedesignlab12345"   /* Password in case of secure AP */
 #define PASSKEY_LEN     pal_Strlen(PASSKEY)  /* Password length in case of secure AP */
 
 /*
@@ -144,6 +144,7 @@ uint32_t Amplitudes[3];
 uint32_t TxChannel;
 uint32_t StartTime;
 uint32_t TimeToConvert; // in msec
+int i = 0;
 
 
 Network n;
@@ -490,11 +491,11 @@ int main(int argc, char** argv)
     /*
      * RPM
      */
-    int i = 0;
-//    int nval = 0;
+
+    int nVal = 0;
 //    Clock_Init48MHz();                     // set system clock to 48 MHz
     Tachometer_Init();
-//    EnableInterrupts();
+    EnableInterrupts();
 
 
     /*
@@ -641,6 +642,10 @@ int main(int argc, char** argv)
             ActualL = 2000000/avg(LeftTach, TACHBUFF);
             ActualR = 2000000/avg(RightTach, TACHBUFF);
           }
+          Average_RPM_L[nVal] = ActualL;
+          Average_RPM_R[nVal] = ActualR;
+          nVal++;
+          nVal = nVal % TACHBUFF;
           sprintf(leftRPM, "%d", ActualL);
           sprintf(rightRPM, "%d", ActualR);
 
@@ -672,6 +677,7 @@ int main(int argc, char** argv)
             sendMessage(rightRPM,"MayaNet_RightRPM");
 
             publishID = 0;
+//            i = 0;
 //        }
 
         Delay(10);
@@ -732,7 +738,7 @@ static void messageArrived(MessageData* data) {
 
     if (strcmp(tok,"go") == 0) {
         CLI_Write(" Motor_LeftSimple(5000,200);");
-        Motor_Forward(7500,0);
+        Motor_Forward(7500,7500);
 //        leftRPM = "  7500  ";
 //        rightRPM = "   0   ";
     }
@@ -740,6 +746,7 @@ static void messageArrived(MessageData* data) {
     if (strcmp(tok,"stop") == 0) {
         CLI_Write(" Motor_StopSimple();");
         Motor_Stop();  // stop the motors
+        i = 0;
 //        leftRPM = "   0   ";
 //        rightRPM = "   0   ";
     }
