@@ -1,0 +1,21 @@
+<projectSpec>
+  <project
+    compilerBuildOptions="-I${PROJECT_LOC} -I${PROJECT_LOC}/simplelink/include -I${PROJECT_LOC}/simplelink/source -I${PROJECT_LOC}/board -I${PROJECT_LOC}/cli_uart -I${PROJECT_LOC}/driverlib/MSP432P4xx -I${PROJECT_LOC}/spi_cc3100 -I${PROJECT_LOC}/uart_cc3100 -I${PROJECT_LOC}/mqtt --define=_USE_CLI_"
+    device="Cortex M.MSP432P401R"
+    name="CC3100BOOST_MQTT-TwitterLED_MSP432P401R"
+    enableHexTool="true" >
+    <file action="copy" path="../board" />
+    <file action="copy" path="../cli_uart" />
+    <file action="copy" path="../driverlib" />
+    <file action="copy" path="../mqtt" />
+    <file action="copy" path="../simplelink" />
+    <file action="copy" path="../spi_cc3100" />
+    <file action="copy" path="../uart_cc3100" />
+    <file action="copy" path="../main.c" openOnCreation="true" />
+    <file action="copy" path="../README.txt" openOnCreation="true" />
+    <file action="copy" path="../sl_common.h" />
+    <file action="copy" path="msp432p401r.cmd" overwriteExisting="true" />
+    <file action="copy" path="startup_msp432p401r_ccs.c" overwriteExisting="true" />
+    <file action="copy" path="system_msp432p401r.c" overwriteExisting="true" />
+  </project>
+</projectSpec>
