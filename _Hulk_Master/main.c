@@ -76,21 +76,22 @@ int32_t Left(int32_t left){
 
 // assumes track is 500mm
 int32_t Mode=1; // 0 stop, 1 run
-int32_t Error;
-int32_t Ki=1;  // integral controller gain
-int32_t Kp=2;  // proportional controller gain //was 4
-int32_t UR, UL;  // PWM duty 0 to 14,998
+float Error;
+float Ki=1;  // integral controller gain
+float Kp = 2;  // proportional controller gain      //was 4
+float UR, UL;  // PWM duty 0 to 14,998
 
-#define TOOCLOSE 800 //was 200
-#define DESIRED 1000 //was 250
-int32_t SetPoint = 1000; // mm //was 250
+#define TOOCLOSE 400        //was 200
+#define DESIRED 450         //was 250
+int32_t SetPoint = 400; // mm       //was 250
 int32_t LeftDistance,CenterDistance,RightDistance; // mm
-#define TOOFAR  // was 400
+#define TOOFAR 400 // was 400. Don't think they actually use this.
 
-#define PWMNOMINAL 2500 // was 2500
+#define PWMNOMINAL 6500 // was 2500
 #define SWING 2000 //was 1000
 #define PWMMIN (PWMNOMINAL-SWING)
 #define PWMMAX (PWMNOMINAL+SWING)
+
 void Controller(void){ // runs at 100 Hz
   if(Mode){
     if((LeftDistance>DESIRED)&&(RightDistance>DESIRED)){
@@ -122,14 +123,8 @@ void Controller_Right(void){ // runs at 100 Hz
     }else{
       SetPoint = DESIRED;
     }
-    /*if(LeftDistance < RightDistance ){
-      Error = LeftDistance-SetPoint;
-    }else {
-      Error = SetPoint-RightDistance;
-    }*/
 
     Error = SetPoint-RightDistance;
-    //UR = UR + Ki*Error;      // adjust right motor
     UR = PWMNOMINAL+Kp*Error; // proportional control
     UR = UR + Ki*Error;      // adjust right motor
     UL = PWMNOMINAL-Kp*Error; // proportional control
@@ -142,6 +137,35 @@ void Controller_Right(void){ // runs at 100 Hz
     if((RightDistance<250) && (CenterDistance <250)){
         UL = 0;
         UR = PWMNOMINAL;
+    }
+
+    Motor_Forward(UL,UR);
+
+  }
+}
+
+void Controller_Left(void){ // runs at 100 Hz
+  if(Mode){
+    if((LeftDistance>DESIRED)){
+      SetPoint = (LeftDistance)/2;
+    }else{
+      SetPoint = DESIRED;
+    }
+
+    Error = SetPoint-LeftDistance;
+    UL = PWMNOMINAL+Kp*Error; // proportional control
+    UL = UL + Ki*Error;      // adjust right motor
+    UR = PWMNOMINAL-Kp*Error; // proportional control
+
+    if(UR < (PWMNOMINAL-SWING)) UR = PWMNOMINAL-SWING; // 3,000 to 7,000
+    if(UR > (PWMNOMINAL+SWING)) UR = PWMNOMINAL+SWING;
+    if(UL < (PWMNOMINAL-SWING)) UL = PWMNOMINAL-SWING; // 3,000 to 7,000
+    if(UL > (PWMNOMINAL+SWING)) UL = PWMNOMINAL+SWING;
+
+    //turns left if the center measurement and left measurement is small enough that we will hit the wall if we don't turn
+    if((LeftDistance<250) && (CenterDistance <250)){
+        UR = 0;
+        UL = PWMNOMINAL;
     }
 
     Motor_Forward(UL,UR);
@@ -183,7 +207,7 @@ void PORT4_IRQHandler(void){
     Motor_Stop();
     Clock_Delay1ms(1000);         // Must wait 1 second, as per project requirements
 
-    while(1);               //Remove and implement crash recovery
+    while(1){};               //Remove and implement crash recovery
 
     /*                            // How to deal with a crash?
     Motor_Backward(2500,2500);
@@ -277,8 +301,8 @@ void main(void){ // wallFollow wall following implementation
       OPT3101_StartMeasurementChannel(channel);
       i = i + 1;
     }
-    //Controller_Right();
-    Controller();
+    Controller_Right();
+    //Controller();
     if(i >= 100){
       i = 0;
       SetCursor(3, 5);
