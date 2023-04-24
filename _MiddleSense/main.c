@@ -1,6 +1,7 @@
 #include <Dist.h>
 #include <stdint.h>
 #include <math.h>
+#include "Clock.h"
 #include "msp.h"
 #include "pidController.h"
 #include "odometry.h"
@@ -9,17 +10,28 @@
 
 int targetSpeed = 10000;
 int leftSpeed = 0, rightSpeed = 0;
+#define cornerDist 800
+uint8_t lap = 1;
 
-void setCenterSpeed(uint32_t *distances)
+void setCenterSpeedRight(uint32_t *distances)
 {
     int newSpeed = targetSpeed * distances[1] / 1000.0;
     leftSpeed = newSpeed *sin((float)distances[2] * 90.0 / 1000.0 * 0.0174533) * 1.1;
     rightSpeed = newSpeed *sin((float)distances[0] * 90.0 / 1000.0 * 0.0174533);
 }
+void setCenterSpeedLeft(uint32_t *distances)
+{
+    int newSpeed = targetSpeed * distances[1] / 1000.0;
+    leftSpeed = newSpeed *sin((float)distances[2] * 90.0 / 1000.0 * 0.0174533);
+    rightSpeed = newSpeed *sin((float)distances[0] * 90.0 / 1000.0 * 0.0174533) * 1.1;
+}
 
 int main()
 {
     uint32_t distances[3];
+    distances[0] = 0;
+    distances[1] = 0;
+    distances[2] = 0;
 
     BumpInt_Init();
     LaunchPad_Init();
@@ -30,9 +42,52 @@ int main()
     Odometry_Init(0, 0, 0);
     while(1)
     {
-        getDist(distances);
-        setCenterSpeed(distances);
-        setMotorSpeed(leftSpeed, rightSpeed);
+
+
+        switch(lap) {
+
+            case 1:
+
+                getDist(distances);
+                setCenterSpeedRight(distances);
+                setMotorSpeed(leftSpeed, rightSpeed);
+
+                if(distances[1] < cornerDist && distances[2] > cornerDist) {         //If we've detected a corner, turn 90 degrees
+                     LaunchPad_Output(0x01);
+                     lap++;
+                     Clock_Delay1ms(1000);
+                }
+            break;
+            case 2:
+
+                getDist(distances);
+                setCenterSpeedLeft(distances);
+                setMotorSpeed(leftSpeed, rightSpeed);
+                if(distances[1] < cornerDist && distances[0] > cornerDist) {         //If we've detected a corner, turn 90 degrees
+                     LaunchPad_Output(0x02);
+                     lap++;
+                     Clock_Delay1ms(1000);
+                }
+
+            break;
+            case 3:
+
+                getDist(distances);
+                setCenterSpeedLeft(distances);
+                setMotorSpeed(leftSpeed, rightSpeed);
+                if(distances[1] < cornerDist && distances[0] > cornerDist) {         //If we've detected a corner, turn 90 degrees
+                     LaunchPad_Output(0x04);
+                     lap++;
+                     Clock_Delay1ms(1000);
+                }
+
+            break;
+
+        }
+
+        /*getDist(distances);
+        setCenterSpeedRight(distances);
+        setMotorSpeed(leftSpeed, rightSpeed);*/
 
     }
 

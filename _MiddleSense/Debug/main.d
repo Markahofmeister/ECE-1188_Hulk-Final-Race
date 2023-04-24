@@ -29,6 +29,7 @@ main.obj: C:/Users/marka/Spring-2023/Cyber-Physical_Systems/final-race/ECE-1188_
 main.obj: C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/math.h
 main.obj: C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/_defs.h
 main.obj: C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/machine/_limits.h
+main.obj: ../Clock.h
 main.obj: ../pidController.h
 main.obj: C:/Users/marka/Spring-2023/Cyber-Physical_Systems/final-race/ECE-1188_Hullk-Final-Race/_MiddleSense/CustomMotor.h
 main.obj: C:/Users/marka/Spring-2023/Cyber-Physical_Systems/final-race/ECE-1188_Hullk-Final-Race/_MiddleSense/CortexM.h
@@ -97,6 +98,8 @@ C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/math.h:
 C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/_defs.h:
 
 C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/machine/_limits.h:
+
+../Clock.h:
 
 ../pidController.h:
 
