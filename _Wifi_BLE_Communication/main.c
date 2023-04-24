@@ -40,6 +40,8 @@ char input = 'a';
 
 static void Init_Dist();
 static void sendUpdates();
+static void poll_start();
+static void check_stop();
 
 struct{
     _u8 Recvbuff[MAX_SEND_RCV_SIZE];
@@ -144,11 +146,10 @@ int main(int argc, char** argv)
     CLI_Write(" Subscribed to uniqueID topic \n\r");
     /* Wifi Setup Stuff End */
 
-    while(input != 'f') {
-        input = UART0_InChar();
-    }
+    poll_start();
 
     while(1){
+        check_stop();
         sendUpdates();
         Delay(10);
         uint32_t k_i = Ki;
@@ -215,4 +216,18 @@ static void sendUpdates() {
     sendMessage(bump_str,"MayaNet_Bump");
     sendMessage(leftRPM,"MayaNet_LeftRPM");
     sendMessage(rightRPM,"MayaNet_RightRPM");
+}
+
+static void poll_start() {
+    while(input != 'f') {
+        input = UART0_InChar();
+    }
+    return;
+}
+static void check_stop() {
+    input = UART0_InChar();
+    if (input == 's') {
+        while(1){}
+    }
+    return;
 }

@@ -85,7 +85,7 @@ void UART0_Init(void){
 // Input: none
 // Output: ASCII code for key typed
 char UART0_InChar(void){
-  while((EUSCI_A0->IFG&0x01) == 0);
+  if((EUSCI_A0->IFG&0x01) == 0) return 'a';
   return((char)(EUSCI_A0->RXBUF));
 }
 
