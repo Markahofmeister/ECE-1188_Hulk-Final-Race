@@ -37,7 +37,10 @@ int32_t Error_L_prev = 0;
 int32_t Error_R_prev = 0;
 int32_t Error_L_chng = 0;
 int32_t Error_R_chng = 0;
-int32_t t;
+int32_t t = 0;
+int32_t t_prev = 0;
+int32_t Left_dist = 0;
+int32_t Right_dist = 0;
 uint8_t i = 0;
 
 uint16_t avg(uint16_t *array, int length)
@@ -66,10 +69,16 @@ void PID_Motor_Target(int16_t Left_RPM, int16_t Right_RPM){
     DesiredR = Right_RPM;
 }
 
-void PID_Motor_Forward(uint16_t *LeftRPMPtr, uint16_t *RightRPMPtr){
+void PID_Motor_Forward(uint16_t *LeftRPMPtr, uint16_t *RightRPMPtr, int32_t *LeftD, int32_t *RightD){
     Motor_Forward(UL,UR);
     Tachometer_Get(&LeftTach[i], &LeftDir, &LeftSteps, &RightTach[i], &RightDir, &RightSteps);
     i = i + 1;
+
+    Left_dist = Left_dist + 14*3.14*ActualL*(t-t_prev);
+    Right_dist = Right_dist + 14*3.14*ActualR*(t-t_prev);
+
+    t_prev = t;
+    t = t + 10;
 
     if(i >= TACHBUFF){
         //This section of the code checks the wheel state every second (10*100ms)
@@ -79,6 +88,9 @@ void PID_Motor_Forward(uint16_t *LeftRPMPtr, uint16_t *RightRPMPtr){
         // (1/tach step/cycles) * (12,000,000 cycles/sec) * (60 sec/min) * (1/360 rotation/step)
         ActualL = 2000000/avg(LeftTach, TACHBUFF);
         ActualR = 2000000/avg(RightTach, TACHBUFF);
+
+        *LeftD = Left_dist;
+        *RightD = Right_dist;
 
         // Update Pointers
         *LeftRPMPtr = ActualL;
@@ -100,7 +112,8 @@ void PID_Motor_Forward(uint16_t *LeftRPMPtr, uint16_t *RightRPMPtr){
         Error_R_prev = Error_R;
         Motor_Forward(UL,UR);
 
-        printf("\n%5d, %5d, %5d, %5d, %5d, %5d, %5d",t,DesiredL,ActualL,Error_L,DesiredR,ActualR,Error_R);
+        printf("\n%5d, %5d, %5d, %5d, %5d, %5d, %5d, %5d, %5d",t,DesiredL,ActualL,Error_L,DesiredR,ActualR,Error_R, Left_dist/60000, Right_dist/60000);
+
     }
 }
 
@@ -108,4 +121,13 @@ void PID_Motor_Stop(void){
     Motor_Stop();
 }
 
+void PID_Motor_Turn_Right(void){
+    int32_t Left_dist_start = Left_dist;
+    int32_t Right_dist_start = Right_dist;
+    PID_Motor_Target(85, 50);
+    while ((Left_dist < Left_dist_start + 9000000) && (Right_dist < Right_dist_start + 4800000)){
+        PID_Motor_Forward(NULL, NULL, NULL, NULL);
+    }
+    PID_Motor_Stop();
+}
 

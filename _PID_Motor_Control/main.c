@@ -21,13 +21,17 @@ void main(void){
     Tachometer_Init();
     EnableInterrupts();
     PID_Motor_Init(12, 6, 3);
-    PID_Motor_Target(250, 250);
+    PID_Motor_Target(100, 50);
 
     volatile uint16_t LRPM;
     volatile uint16_t RRPM;
 
-    while(Bump_Read() == 0){
-        PID_Motor_Forward(&LRPM, &RRPM);
-        Clock_Delay1ms(10); // delay ~0.1 sec at 48 MHz
-    }
+    volatile int32_t LDist;
+    volatile int32_t RDist;
+
+    //while(Bump_Read() == 0){
+        //PID_Motor_Forward(&LRPM, &RRPM, &LDist, &RDist);
+        PID_Motor_Turn_Right();
+        //Clock_Delay1ms(10); // delay ~0.1 sec at 48 MHz
+    //}
 }
