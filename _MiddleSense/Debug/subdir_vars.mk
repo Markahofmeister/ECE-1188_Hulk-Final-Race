@@ -2,12 +2,15 @@
 # Automatically-generated file. Do not edit!
 ################################################################################
 
+SHELL = cmd.exe
+
 # Add inputs and outputs from these tool invocations to the build variables 
 CMD_SRCS += \
 ../msp432p401r.cmd 
 
 C_SRCS += \
 ../Bump.c \
+../BumpInt.c \
 ../Clock.c \
 ../CortexM.c \
 ../CustomMotor.c \
@@ -33,6 +36,7 @@ C_SRCS += \
 
 C_DEPS += \
 ./Bump.d \
+./BumpInt.d \
 ./Clock.d \
 ./CortexM.d \
 ./CustomMotor.d \
@@ -58,6 +62,7 @@ C_DEPS += \
 
 OBJS += \
 ./Bump.obj \
+./BumpInt.obj \
 ./Clock.obj \
 ./CortexM.obj \
 ./CustomMotor.obj \
@@ -83,6 +88,7 @@ OBJS += \
 
 OBJS__QUOTED += \
 "Bump.obj" \
+"BumpInt.obj" \
 "Clock.obj" \
 "CortexM.obj" \
 "CustomMotor.obj" \
@@ -108,6 +114,7 @@ OBJS__QUOTED += \
 
 C_DEPS__QUOTED += \
 "Bump.d" \
+"BumpInt.d" \
 "Clock.d" \
 "CortexM.d" \
 "CustomMotor.d" \
@@ -133,6 +140,7 @@ C_DEPS__QUOTED += \
 
 C_SRCS__QUOTED += \
 "../Bump.c" \
+"../BumpInt.c" \
 "../Clock.c" \
 "../CortexM.c" \
 "../CustomMotor.c" \

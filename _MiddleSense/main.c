@@ -4,6 +4,8 @@
 #include "msp.h"
 #include "pidController.h"
 #include "odometry.h"
+#include "BumpInt.h"
+#include "LaunchPad.h"
 
 int targetSpeed = 10000;
 int leftSpeed = 0, rightSpeed = 0;
@@ -18,7 +20,9 @@ void setCenterSpeed(uint32_t *distances)
 int main()
 {
     uint32_t distances[3];
-    int32_t x, y, theta;
+
+    BumpInt_Init();
+    LaunchPad_Init();
     Clock_Init48MHz();
     motorPWMInit(15000, 0, 0);
     EnableInterrupts();
@@ -28,11 +32,27 @@ int main()
     {
         getDist(distances);
         setCenterSpeed(distances);
-        UpdatePosition();
-        Odometry_Get(&x, &y, &theta);
         setMotorSpeed(leftSpeed, rightSpeed);
-        Clock_Delay1ms(5);
+
     }
 
+}
+
+void PORT4_IRQHandler(void){            // Deal with Crashes
+
+    uint8_t bsMask = 0xED;
+    Clock_Delay1us(10);         // software debounce
+    P4->IFG &= ~bsMask;         // acknowledge and clear flag
+    P2->OUT ^= 0x02;             // toggle red LED on RGB LED
+    setMotorSpeed(0,0);
+    Clock_Delay1ms(1000);         // Must wait 1 second, as per project requirements
+    LaunchPad_Output(0x02);
+
+    while(1);               //Remove and implement crash recovery
+
+    /*                            // How to deal with a crash?
+    Motor_Backward(2500,2500);
+    Clock_Delay1ms(1000);
+    */
 }
 

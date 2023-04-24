@@ -1,4 +1,5 @@
 "./Bump.obj"
+"./BumpInt.obj"
 "./Clock.obj"
 "./CortexM.obj"
 "./CustomMotor.obj"
