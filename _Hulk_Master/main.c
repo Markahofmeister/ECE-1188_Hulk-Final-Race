@@ -48,6 +48,10 @@ uint32_t Noises[3];
 uint32_t TxChannel;
 uint32_t StartTime;
 uint32_t TimeToConvert; // in msec
+
+//used for testing right or left wall following
+uint8_t wallControl = 0;                //0 = right, 1 = left
+
 bool pollDistanceSensor(void){
   if(OPT3101_CheckDistanceSensor()){
     TxChannel = OPT3101_GetMeasurement(Distances,Amplitudes);
@@ -77,7 +81,7 @@ int32_t Left(int32_t left){
 // assumes track is 500mm
 int32_t Mode=1; // 0 stop, 1 run
 float Error;
-float Ki=1;  // integral controller gain
+float Ki=0.9;  // integral controller gain
 float Kp = 2;  // proportional controller gain      //was 4
 float UR, UL;  // PWM duty 0 to 14,998
 
@@ -85,9 +89,9 @@ float UR, UL;  // PWM duty 0 to 14,998
 #define DESIRED 450         //was 250
 int32_t SetPoint = 400; // mm       //was 250
 int32_t LeftDistance,CenterDistance,RightDistance; // mm
-#define TOOFAR 400 // was 400. Don't think they actually use this.
+#define TOOFAR 700          // was 400.
 
-#define PWMNOMINAL 6500 // was 2500
+#define PWMNOMINAL 6000 // was 2500
 #define SWING 2000 //was 1000
 #define PWMMIN (PWMNOMINAL-SWING)
 #define PWMMAX (PWMNOMINAL+SWING)
@@ -134,9 +138,14 @@ void Controller_Right(void){ // runs at 100 Hz
     if(UL > (PWMNOMINAL+SWING)) UL = PWMNOMINAL+SWING;
 
     //turns left if the center measurement and right measurement is small enough that we will hit the wall if we don't turn
-    if((RightDistance<250) && (CenterDistance <250)){
-        UL = 0;
+    if((RightDistance < TOOCLOSE) && (CenterDistance < TOOCLOSE)){
+        UL = PWMNOMINAL / 10;
         UR = PWMNOMINAL;
+    }
+    if(RightDistance > TOOFAR) {
+        Motor_Stop();
+        LaunchPad_Output(0x04);
+        while(1){}
     }
 
     Motor_Forward(UL,UR);
@@ -157,20 +166,30 @@ void Controller_Left(void){ // runs at 100 Hz
     UL = UL + Ki*Error;      // adjust right motor
     UR = PWMNOMINAL-Kp*Error; // proportional control
 
-    if(UR < (PWMNOMINAL-SWING)) UR = PWMNOMINAL-SWING; // 3,000 to 7,000
+    if(UR < (PWMNOMINAL-SWING)) UR = PWMNOMINAL-SWING;
     if(UR > (PWMNOMINAL+SWING)) UR = PWMNOMINAL+SWING;
-    if(UL < (PWMNOMINAL-SWING)) UL = PWMNOMINAL-SWING; // 3,000 to 7,000
+    if(UL < (PWMNOMINAL-SWING)) UL = PWMNOMINAL-SWING;
     if(UL > (PWMNOMINAL+SWING)) UL = PWMNOMINAL+SWING;
 
-    //turns left if the center measurement and left measurement is small enough that we will hit the wall if we don't turn
+    //turns right if the center measurement and left measurement is small enough that we will hit the wall if we don't turn
     if((LeftDistance<250) && (CenterDistance <250)){
-        UR = 0;
+        UR = PWMNOMINAL / 10;
         UL = PWMNOMINAL;
     }
 
     Motor_Forward(UL,UR);
 
   }
+}
+
+void Controller_Corner(void) {      //Use to turn a corner and stick to the same wall
+
+}
+
+void Controller_Corner_Switch(void) {       //Use to turn a corner and switch which wall is being followed.
+
+
+
 }
 
 /*void Pause(void){int i;
@@ -301,8 +320,28 @@ void main(void){ // wallFollow wall following implementation
       OPT3101_StartMeasurementChannel(channel);
       i = i + 1;
     }
-    Controller_Right();
-    //Controller();
+
+    if(LaunchPad_Input()) {
+        if(wallControl == 0) {
+           LaunchPad_Output(0x01);
+           wallControl = 1;
+        }
+        else {
+            LaunchPad_Output(0x02);
+            wallControl = 0;
+        }
+
+    }
+
+    if(wallControl == 0) {
+        Controller_Right();
+    }
+    else if(wallControl == 1) {
+        Controller_Left();
+    }
+
+
+
     if(i >= 100){
       i = 0;
       SetCursor(3, 5);
