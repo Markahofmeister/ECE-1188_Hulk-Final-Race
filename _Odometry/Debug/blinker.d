@@ -1,6 +1,6 @@
 # FIXED
 
-blinker.obj: C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race-master/inc/blinker.c
+blinker.obj: C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race/inc/blinker.c
 blinker.obj: C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/stdint.h
 blinker.obj: C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/_ti_config.h
 blinker.obj: C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/linkage.h
@@ -19,9 +19,9 @@ blinker.obj: C:/ti/ccs1210/ccs/ccs_base/arm/include/CMSIS/core_cm4.h
 blinker.obj: C:/ti/ccs1210/ccs/ccs_base/arm/include/CMSIS/cmsis_compiler.h
 blinker.obj: C:/ti/ccs1210/ccs/ccs_base/arm/include/CMSIS/cmsis_ccs.h
 blinker.obj: C:/ti/ccs1210/ccs/ccs_base/arm/include/system_msp432p401r.h
-blinker.obj: C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race-master/inc/blinker.h
+blinker.obj: C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race/inc/blinker.h
 
-C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race-master/inc/blinker.c:
+C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race/inc/blinker.c:
 
 C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/stdint.h:
 
@@ -59,5 +59,5 @@ C:/ti/ccs1210/ccs/ccs_base/arm/include/CMSIS/cmsis_ccs.h:
 
 C:/ti/ccs1210/ccs/ccs_base/arm/include/system_msp432p401r.h:
 
-C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race-master/inc/blinker.h:
+C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race/inc/blinker.h:
 

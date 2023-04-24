@@ -48,20 +48,23 @@ policies, either expressed or implied, of the FreeBSD Project.
 
 #include <stdint.h>
 #include "msp.h"
-// Initialize Bump sensors
-// Make six Port 4 pins inputs
-// Activate interface pullup
-// pins 7,6,5,3,2,0
+#include "CortexM.h"
+
 void Bump_Init(void){
-
-    uint8_t bsMask = 0xED;
-
-    P4->SEL0 &= ~bsMask;            // select GPIO
-    P4->SEL1 &= ~bsMask;
-    P4->DIR &= ~bsMask;             // Change direction to input
-    P4->REN |= bsMask;              // Enable PUPD resistor
-    P4->OUT |= bsMask;              // Set to pull-up
-  
+    // Initialize Bump sensors
+    P4->SEL0 &= ~0xED;
+    P4->SEL1 &= ~0xED; // make ports P4.1 and P4.4 GPIO
+    P4->DIR &= ~0xED; // make ports P4.1 and P4.4 Input
+    P4->REN |= 0xED; // enable pullup pulldown resistor on ports P4.1 and P4.4 GPIO
+    P4->OUT |= 0xED; // set ports P4.1 and P4.4 to use pull up resistor
+    P4->IES |= 0xED;
+    P4->IFG &= ~0xED;
+    P4->IE |= 0xED;
+    /*
+    NVIC->IP[9] = (NVIC->IP[9]&0xFF0FFFFF) | 0x00C00000;
+    NVIC->ISER[1] = 0x00000040;
+    EnableInterrupts();
+    */
 }
 // Read current state of 6 switches
 // Returns a 6-bit positive logic result (0 to 63)
@@ -72,6 +75,6 @@ void Bump_Init(void){
 // bit 1 Bump1
 // bit 0 Bump0
 uint8_t Bump_Read(void){
-    return (P4->IN&0xED);   // Read 6 most LSB of port 4
+    return (~(P4->IN) & 0xED); // Read P4.0-4.5
 }
 

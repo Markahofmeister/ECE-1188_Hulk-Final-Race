@@ -9,20 +9,20 @@ CMD_SRCS += \
 ../msp432p401r.cmd 
 
 C_SRCS += \
-C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race-master/inc/Bump.c \
-C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race-master/inc/Clock.c \
-C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race-master/inc/LaunchPad.c \
-C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race-master/inc/Motor.c \
+C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race/inc/Bump.c \
+C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race/inc/Clock.c \
+C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race/inc/LaunchPad.c \
+C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race/inc/Motor.c \
 ../OdometryTest-Bronco.c \
-C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race-master/inc/PWM.c \
-C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race-master/inc/SSD1306.c \
-C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race-master/inc/TA3InputCapture.c \
-C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race-master/inc/Tachometer.c \
-C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race-master/inc/TimerA1.c \
-C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race-master/inc/UART0.c \
-C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race-master/inc/blinker.c \
-C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race-master/inc/fixed.c \
-C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race-master/inc/odometry.c \
+C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race/inc/PWM.c \
+C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race/inc/SSD1306.c \
+C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race/inc/TA3InputCapture.c \
+C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race/inc/Tachometer.c \
+C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race/inc/TimerA1.c \
+C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race/inc/UART0.c \
+C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race/inc/blinker.c \
+C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race/inc/fixed.c \
+C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race/inc/odometry.c \
 ../startup_msp432p401r_ccs.c \
 ../system_msp432p401r.c 
 
@@ -99,20 +99,20 @@ C_DEPS__QUOTED += \
 "system_msp432p401r.d" 
 
 C_SRCS__QUOTED += \
-"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race-master/inc/Bump.c" \
-"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race-master/inc/Clock.c" \
-"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race-master/inc/LaunchPad.c" \
-"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race-master/inc/Motor.c" \
+"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race/inc/Bump.c" \
+"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race/inc/Clock.c" \
+"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race/inc/LaunchPad.c" \
+"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race/inc/Motor.c" \
 "../OdometryTest-Bronco.c" \
-"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race-master/inc/PWM.c" \
-"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race-master/inc/SSD1306.c" \
-"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race-master/inc/TA3InputCapture.c" \
-"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race-master/inc/Tachometer.c" \
-"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race-master/inc/TimerA1.c" \
-"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race-master/inc/UART0.c" \
-"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race-master/inc/blinker.c" \
-"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race-master/inc/fixed.c" \
-"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race-master/inc/odometry.c" \
+"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race/inc/PWM.c" \
+"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race/inc/SSD1306.c" \
+"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race/inc/TA3InputCapture.c" \
+"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race/inc/Tachometer.c" \
+"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race/inc/TimerA1.c" \
+"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race/inc/UART0.c" \
+"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race/inc/blinker.c" \
+"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race/inc/fixed.c" \
+"C:/Users/Bronco/OneDrive - University of Pittsburgh/2023 Spring Semester/ECE 1188/ECE-1188_Hulk-Final-Race/inc/odometry.c" \
 "../startup_msp432p401r_ccs.c" \
 "../system_msp432p401r.c" 
 

@@ -52,8 +52,8 @@ policies, either expressed or implied, of the FreeBSD Project.
 #include "..\inc\bump.h"
 #include "..\inc\clock.h"
 #include "..\inc\blinker.h"
-uint32_t MotorFast=7500; // PWM for fast motions, out of 15000
-uint32_t MotorSlow=7500; // PWM for slow motions, out of 15000
+uint32_t MotorFast=4000; // PWM for fast motions, out of 15000
+uint32_t MotorSlow=2000; // PWM for slow motions, out of 15000
 void Odometry_SetPower(uint32_t fast, uint32_t slow){
   MotorFast=fast; ///< PWM for fast motions, out of 15000
   MotorSlow=slow;

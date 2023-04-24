@@ -1,6 +1,6 @@
 # FIXED
 
-SSD1306.obj: C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race-master/inc/SSD1306.c
+SSD1306.obj: C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race/inc/SSD1306.c
 SSD1306.obj: C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/stdint.h
 SSD1306.obj: C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/_ti_config.h
 SSD1306.obj: C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/linkage.h
@@ -19,9 +19,9 @@ SSD1306.obj: C:/ti/ccs1210/ccs/ccs_base/arm/include/CMSIS/core_cm4.h
 SSD1306.obj: C:/ti/ccs1210/ccs/ccs_base/arm/include/CMSIS/cmsis_compiler.h
 SSD1306.obj: C:/ti/ccs1210/ccs/ccs_base/arm/include/CMSIS/cmsis_ccs.h
 SSD1306.obj: C:/ti/ccs1210/ccs/ccs_base/arm/include/system_msp432p401r.h
-SSD1306.obj: C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race-master/inc/SSD1306.h
+SSD1306.obj: C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race/inc/SSD1306.h
 
-C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race-master/inc/SSD1306.c:
+C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race/inc/SSD1306.c:
 
 C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/stdint.h:
 
@@ -59,5 +59,5 @@ C:/ti/ccs1210/ccs/ccs_base/arm/include/CMSIS/cmsis_ccs.h:
 
 C:/ti/ccs1210/ccs/ccs_base/arm/include/system_msp432p401r.h:
 
-C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race-master/inc/SSD1306.h:
+C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race/inc/SSD1306.h:
 

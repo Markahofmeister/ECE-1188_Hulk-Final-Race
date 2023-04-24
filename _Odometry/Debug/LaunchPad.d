@@ -1,6 +1,6 @@
 # FIXED
 
-LaunchPad.obj: C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race-master/inc/LaunchPad.c
+LaunchPad.obj: C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race/inc/LaunchPad.c
 LaunchPad.obj: C:/ti/ccs1210/ccs/ccs_base/arm/include/msp.h
 LaunchPad.obj: C:/ti/ccs1210/ccs/ccs_base/arm/include/msp432p401r.h
 LaunchPad.obj: C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/stdint.h
@@ -20,7 +20,7 @@ LaunchPad.obj: C:/ti/ccs1210/ccs/ccs_base/arm/include/CMSIS/cmsis_compiler.h
 LaunchPad.obj: C:/ti/ccs1210/ccs/ccs_base/arm/include/CMSIS/cmsis_ccs.h
 LaunchPad.obj: C:/ti/ccs1210/ccs/ccs_base/arm/include/system_msp432p401r.h
 
-C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race-master/inc/LaunchPad.c:
+C:/Users/Bronco/OneDrive\ -\ University\ of\ Pittsburgh/2023\ Spring\ Semester/ECE\ 1188/ECE-1188_Hulk-Final-Race/inc/LaunchPad.c:
 
 C:/ti/ccs1210/ccs/ccs_base/arm/include/msp.h:
 

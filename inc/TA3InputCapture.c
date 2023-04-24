@@ -43,6 +43,7 @@ those of the authors and should not be interpreted as representing official
 policies, either expressed or implied, of the FreeBSD Project.
 */
 
+// external signal connected to P8.2 (TA3CCP2) (trigger on rising edge) old robot code
 // external signal connected to P10.5 (TA3CCP1) (trigger on rising edge)
 // external signal connected to P10.4 (TA3CCP0) (trigger on rising edge)
 
@@ -52,6 +53,7 @@ policies, either expressed or implied, of the FreeBSD Project.
 void ta3dummy(uint16_t t){};       // dummy function
 void (*CaptureTask0)(uint16_t time) = ta3dummy;// user function
 void (*CaptureTask1)(uint16_t time) = ta3dummy;// user function
+void (*CaptureTask2)(uint16_t time) = ta3dummy;// user function (old robot code)
 
 
 //------------TimerA3Capture_Init01------------
@@ -67,19 +69,82 @@ void (*CaptureTask1)(uint16_t time) = ta3dummy;// user function
 // Assumes: low-speed subsystem master clock is 12 MHz
 void TimerA3Capture_Init01(void(*task0)(uint16_t time), void(*task1)(uint16_t time)){
     // write this for Lab 16
-
+  CaptureTask0 = task0;            // user function
+  CaptureTask1 = task1;            // user function
+  // initialize P10.4 and P10.5 and make them rising edge (P10.4 TA3CCP0; P10.5 TA3CCP1)
+  P10->SEL0 |= 0x30;
+  P10->SEL1 &= ~0x30;              // configure P10.4 as TA3CCP0 and P10.5 as TA3CCP1
+  P10->DIR &= ~0x30;               // make P10.4 and P10.5 in
+  TIMER_A3->CTL &= ~0x0030;        // halt Timer A3
+  // bits15-10=XXXXXX, reserved
+  // bits9-8=10,       clock source to SMCLK
+  // bits7-6=00,       input clock divider /1
+  // bits5-4=00,       stop mode
+  // bit3=X,           reserved
+  // bit2=0,           set this bit to clear
+  // bit1=0,           interrupt disable
+  // bit0=0,           clear interrupt pending
+  TIMER_A3->CTL = 0x0200;
+  // bits15-14=01,     capture on rising edge
+  // bits13-12=00,     capture/compare input on CCI3A
+  // bit11=1,          synchronous capture source
+  // bit10=X,          synchronized capture/compare input
+  // bit9=X,           reserved
+  // bit8=1,           capture mode
+  // bits7-5=XXX,      output mode
+  // bit4=1,           enable capture/compare interrupt
+  // bit3=X,           read capture/compare input from here
+  // bit2=X,           output this value in output mode 0
+  // bit1=X,           capture overflow status
+  // bit0=0,           clear capture/compare interrupt pending
+  TIMER_A3->CCTL[0] = 0x4910;
+  // bits15-14=01,     capture on rising edge
+  // bits13-12=00,     capture/compare input on CCI3A
+  // bit11=1,          synchronous capture source
+  // bit10=X,          synchronized capture/compare input
+  // bit9=X,           reserved
+  // bit8=1,           capture mode
+  // bits7-5=XXX,      output mode
+  // bit4=1,           enable capture/compare interrupt
+  // bit3=X,           read capture/compare input from here
+  // bit2=X,           output this value in output mode 0
+  // bit1=X,           capture overflow status
+  // bit0=0,           clear capture/compare interrupt pending
+  TIMER_A3->CCTL[1] = 0x4910;
+  TIMER_A3->EX0 &= ~0x0007;        // configure for input clock divider /1
+  NVIC->IP[14] = 0x40;             // priority 2
+  NVIC->IP[15] = 0x40;             // priority 2
+// interrupts enabled in the main program after all devices initialized
+  NVIC->ISER[0] = 0x0000C000;      // enable interrupt 15 and 14 in NVIC
+  // bits15-10=XXXXXX, reserved
+  // bits9-8=10,       clock source to SMCLK
+  // bits7-6=00,       input clock divider /1
+  // bits5-4=10,       continuous count up mode
+  // bit3=X,           reserved
+  // bit2=1,           set this bit to clear
+  // bit1=0,           interrupt disable (no interrupt on rollover)
+  // bit0=0,           clear interrupt pending
+  TIMER_A3->CTL |= 0x0024;         // reset and start Timer A3 in continuous up mode
 }
 
 void TA3_0_IRQHandler(void){
     // write this for Lab 16
 
-
+  TIMER_A3->CCTL[0] &= ~0x0001;    // acknowledge capture/compare interrupt 0
+  (*CaptureTask0)(TIMER_A3->CCR[0]);// execute user task
 }
 
 void TA3_N_IRQHandler(void){
     // write this for Lab 16
 
-
+  if(((TIMER_A3->CCTL[1])&0x0001) != 0){
+    TIMER_A3->CCTL[1] &= ~0x0001;  // acknowledge capture/compare interrupt 1
+    (*CaptureTask1)(TIMER_A3->CCR[1]);// execute user task
+  }
+  if(((TIMER_A3->CCTL[2])&0x0001) != 0){
+    TIMER_A3->CCTL[2] &= ~0x0001;  // acknowledge capture/compare interrupt 2
+    (*CaptureTask2)(TIMER_A3->CCR[2]);// execute user task
+  }
 }
 
 // old robot code
@@ -96,5 +161,64 @@ void TA3_N_IRQHandler(void){
 // Output: none
 // Assumes: low-speed subsystem master clock is 12 MHz
 void TimerA3Capture_Init02(void(*task0)(uint16_t time), void(*task2)(uint16_t time)){
-// old robot code
+  CaptureTask0 = task0;            // user function
+  CaptureTask2 = task2;            // user function
+  // initialize P8.2 and make it rising edge (P8.2 TA3CCP2)
+  P8->SEL0 |= 0x04;
+  P8->SEL1 &= ~0x04;               // configure P8.2 as TA3CCP2
+  P8->DIR &= ~0x04;                // make P8.2 in
+  // initialize P10.4 and make it rising edge (P10.4 TA3CCP0)
+  P10->SEL0 |= 0x10;
+  P10->SEL1 &= ~0x10;              // configure P10.4 as TA3CCP0
+  P10->DIR &= ~0x10;               // make P10.4 in
+  TIMER_A3->CTL &= ~0x0030;        // halt Timer A3
+  // bits15-10=XXXXXX, reserved
+  // bits9-8=10,       clock source to SMCLK
+  // bits7-6=00,       input clock divider /1
+  // bits5-4=00,       stop mode
+  // bit3=X,           reserved
+  // bit2=0,           set this bit to clear
+  // bit1=0,           interrupt disable
+  // bit0=0,           clear interrupt pending
+  TIMER_A3->CTL = 0x0200;
+  // bits15-14=01,     capture on rising edge
+  // bits13-12=00,     capture/compare input on CCI3A
+  // bit11=1,          synchronous capture source
+  // bit10=X,          synchronized capture/compare input
+  // bit9=X,           reserved
+  // bit8=1,           capture mode
+  // bits7-5=XXX,      output mode
+  // bit4=1,           enable capture/compare interrupt
+  // bit3=X,           read capture/compare input from here
+  // bit2=X,           output this value in output mode 0
+  // bit1=X,           capture overflow status
+  // bit0=0,           clear capture/compare interrupt pending
+  TIMER_A3->CCTL[0] = 0x4910;
+  // bits15-14=01,     capture on rising edge
+  // bits13-12=00,     capture/compare input on CCI3A
+  // bit11=1,          synchronous capture source
+  // bit10=X,          synchronized capture/compare input
+  // bit9=X,           reserved
+  // bit8=1,           capture mode
+  // bits7-5=XXX,      output mode
+  // bit4=1,           enable capture/compare interrupt
+  // bit3=X,           read capture/compare input from here
+  // bit2=X,           output this value in output mode 0
+  // bit1=X,           capture overflow status
+  // bit0=0,           clear capture/compare interrupt pending
+  TIMER_A3->CCTL[2] = 0x4910;
+  TIMER_A3->EX0 &= ~0x0007;        // configure for input clock divider /1
+  NVIC->IP[14] = 0x40;             // priority 2
+  NVIC->IP[15] = 0x40;             // priority 2
+// interrupts enabled in the main program after all devices initialized
+  NVIC->ISER[0] = 0x0000C000;      // enable interrupt 15 and 14 in NVIC
+  // bits15-10=XXXXXX, reserved
+  // bits9-8=10,       clock source to SMCLK
+  // bits7-6=00,       input clock divider /1
+  // bits5-4=10,       continuous count up mode
+  // bit3=X,           reserved
+  // bit2=1,           set this bit to clear
+  // bit1=0,           interrupt disable (no interrupt on rollover)
+  // bit0=0,           clear interrupt pending
+  TIMER_A3->CTL |= 0x0024;         // reset and start Timer A3 in continuous up mode
 }
