@@ -36,6 +36,7 @@ uint32_t channel = 1;
 int nVal = 0;
 int rc = 0;
 char* bump_str;
+char input = 'a';
 
 static void Init_Dist();
 static void sendUpdates();
@@ -60,19 +61,14 @@ int main(int argc, char** argv)
     Tachometer_Init();
     EnableInterrupts();
     CLI_Configure();
+    Init_Dist();
 
-
-
+    /* Wifi Setup Stuff Start */
     _i32 retVal = -1;
     retVal = initializeAppVariables();
     ASSERT_ON_ERROR(retVal);
     stopWDT();
     initClk();
-
-
-
-    Init_Dist();
-
     retVal = configureSimpleLinkToDefaultState();
     if(retVal < 0)
     {
@@ -146,7 +142,11 @@ int main(int argc, char** argv)
         LOOP_FOREVER();
     }
     CLI_Write(" Subscribed to uniqueID topic \n\r");
+    /* Wifi Setup Stuff End */
 
+    while(input != 'f') {
+        input = UART0_InChar();
+    }
 
     while(1){
         sendUpdates();
@@ -175,9 +175,6 @@ static void sendUpdates() {
         LOOP_FOREVER();
     }
 
-    /*
-     * Tachometry
-     */
     Tachometer_Get(&LeftTach[i], &LeftDir, &LeftSteps, &RightTach[i], &RightDir, &RightSteps);
     i = i + 1;
     if(i >= TACHBUFF)
