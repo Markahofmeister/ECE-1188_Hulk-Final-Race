@@ -1,7 +1,7 @@
 # Ignore Everything
-/*
 **/Debug
 **/targetConfigs
+/*
 
 # Except...
 !.gitignore
