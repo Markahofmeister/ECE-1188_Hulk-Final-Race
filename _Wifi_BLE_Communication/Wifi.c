@@ -138,9 +138,9 @@ int32_t RightSteps;                      // number of tachometer steps of right 
 
 uint16_t Average_RPM_L[TACHBUFF];
 uint16_t Average_RPM_R[TACHBUFF];
-uint32_t Ki;
-uint32_t Kp;
-uint32_t Kd;
+//uint32_t Ki;
+//uint32_t Kp;
+//uint32_t Kd;
 
 /*
  * Distance
@@ -444,7 +444,7 @@ void messageArrivedKi(MessageData* data) {
     CLI_Write(tok);
     CLI_Write("\n\r");
 //    Ki = strtoi(tok);
-    sscanf(tok, "%d", &Ki);
+//    sscanf(tok, "%d", &Ki);
 }
 
 void messageArrivedKp(MessageData* data) {
@@ -469,7 +469,7 @@ void messageArrivedKp(MessageData* data) {
     CLI_Write(tok);
     CLI_Write("\n\r");
 //    Kp = strtoi(tok);
-    sscanf(tok, "%d", &Kp);
+//    sscanf(tok, "%d", &Kp);
 }
 
 void messageArrivedKd(MessageData* data) {
@@ -493,7 +493,7 @@ void messageArrivedKd(MessageData* data) {
     CLI_Write(tok);
     CLI_Write("\n\r");
 //    Kd = strtoi(tok);
-    sscanf(tok, "%d", &Kd);
+//    sscanf(tok, "%d", &Kd);
 }
 void sendMessage(char* message,const char* topicName) {
     int rc = 0;
@@ -741,5 +741,4 @@ _i32 initializeAppVariables()
 
     return SUCCESS;
 }
-
 

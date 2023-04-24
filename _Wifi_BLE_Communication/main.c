@@ -1,5 +1,9 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
+
+#include "FFT.h"
+#include "LPF.h"
 #include "driverlib.h"
 #include "simplelink.h"
 #include "sl_common.h"
@@ -54,16 +58,135 @@ struct{
     _i16 SockID;
 }g_AppData;
 
+int32_t Right(int32_t right){
+  return  (right*(59*right + 7305) + 2348974)/32768;
+}
+// left is raw sensor data from left sensor
+// return calibrated distance from center of Robot to left wall
+int32_t Left(int32_t left){
+  return (1247*left)/2048 + 22;
+}
+
+// assumes track is 500mm
+int32_t Mode=1; // 0 stop, 1 run
+float Error;
+uint32_t Ki=1;  // integral controller gain
+uint32_t Kp = 2;  // proportional controller gain      //was 4
+uint32_t Kd = 0;
+uint32_t UR, UL;  // PWM duty 0 to 14,998
+#define TOOCLOSE 400        //was 200
+#define DESIRED 450         //was 250
+int32_t SetPoint = 400; // mm       //was 250
+int32_t LeftDistance,CenterDistance,RightDistance; // mm
+#define TOOFAR 400 // was 400. Don't think they actually use this.
+
+#define PWMNOMINAL 6500 // was 2500
+#define SWING 2000 //was 1000
+#define PWMMIN (PWMNOMINAL-SWING)
+#define PWMMAX (PWMNOMINAL+SWING)
+
+
+void Controller(void){ // runs at 100 Hz
+  if(Mode){
+    if((LeftDistance>DESIRED)&&(RightDistance>DESIRED)){
+      SetPoint = (LeftDistance+RightDistance)/2;
+    }else{
+      SetPoint = DESIRED;
+    }
+    if(LeftDistance < RightDistance ){
+      Error = LeftDistance-SetPoint;
+    }else {
+      Error = SetPoint-RightDistance;
+    }
+ //   UR = UR + Ki*Error;      // adjust right motor
+    UR = PWMNOMINAL+Kp*Error; // proportional control
+    UL = PWMNOMINAL-Kp*Error; // proportional control
+    if(UR < (PWMNOMINAL-SWING)) UR = PWMNOMINAL-SWING; // 3,000 to 7,000
+    if(UR > (PWMNOMINAL+SWING)) UR = PWMNOMINAL+SWING;
+    if(UL < (PWMNOMINAL-SWING)) UL = PWMNOMINAL-SWING; // 3,000 to 7,000
+    if(UL > (PWMNOMINAL+SWING)) UL = PWMNOMINAL+SWING;
+    Motor_Forward(UL,UR);
+
+  }
+}
+
+void Controller_Right(void){ // runs at 100 Hz
+  if(Mode){
+    if((RightDistance>DESIRED)){
+      SetPoint = (RightDistance)/2;
+    }else{
+      SetPoint = DESIRED;
+    }
+
+    Error = SetPoint-RightDistance;
+    UR = PWMNOMINAL+Kp*Error; // proportional control
+    UR = UR + Ki*Error;      // adjust right motor
+    UL = PWMNOMINAL-Kp*Error; // proportional control
+    if(UR < (PWMNOMINAL-SWING)) UR = PWMNOMINAL-SWING; // 3,000 to 7,000
+    if(UR > (PWMNOMINAL+SWING)) UR = PWMNOMINAL+SWING;
+    if(UL < (PWMNOMINAL-SWING)) UL = PWMNOMINAL-SWING; // 3,000 to 7,000
+    if(UL > (PWMNOMINAL+SWING)) UL = PWMNOMINAL+SWING;
+
+    //turns left if the center measurement and right measurement is small enough that we will hit the wall if we don't turn
+    if((RightDistance<250) && (CenterDistance <250)){
+        UL = 0;
+        UR = PWMNOMINAL;
+    }
+
+    Motor_Forward(UL,UR);
+
+  }
+}
+void Controller_Left(void){ // runs at 100 Hz
+  if(Mode){
+    if((LeftDistance>DESIRED)){
+      SetPoint = (LeftDistance)/2;
+    }else{
+      SetPoint = DESIRED;
+    }
+
+    Error = SetPoint-LeftDistance;
+    UL = PWMNOMINAL+Kp*Error; // proportional control
+    UL = UL + Ki*Error;      // adjust right motor
+    UR = PWMNOMINAL-Kp*Error; // proportional control
+
+    if(UR < (PWMNOMINAL-SWING)) UR = PWMNOMINAL-SWING; // 3,000 to 7,000
+    if(UR > (PWMNOMINAL+SWING)) UR = PWMNOMINAL+SWING;
+    if(UL < (PWMNOMINAL-SWING)) UL = PWMNOMINAL-SWING; // 3,000 to 7,000
+    if(UL > (PWMNOMINAL+SWING)) UL = PWMNOMINAL+SWING;
+
+    //turns left if the center measurement and left measurement is small enough that we will hit the wall if we don't turn
+    if((LeftDistance<250) && (CenterDistance <250)){
+        UR = 0;
+        UL = PWMNOMINAL;
+    }
+
+    Motor_Forward(UL,UR);
+
+  }
+}
 
 int main(int argc, char** argv)
 
 {
+    int i_cont = 0;                // Used for...what?
+
     Motor_Init();
     Bump_Init();
     Tachometer_Init();
-    EnableInterrupts();
+//    EnableInterrupts();
     CLI_Configure();
+    DisableInterrupts();
+    Clock_Init48MHz();
+    LaunchPad_Init();
+    Motor_Stop();
+
+    Mode = 1;
     Init_Dist();
+
+    UR = UL = PWMNOMINAL;     //initial power
+
+    EnableInterrupts();
 
     /* Wifi Setup Stuff Start */
     _i32 retVal = -1;
@@ -150,23 +273,59 @@ int main(int argc, char** argv)
 
     while(1){
         check_stop();
+
+        if(TxChannel <= 2){ // 0,1,2 means new data
+          if(TxChannel==0){
+            if(Amplitudes[0] > 1000){
+              LeftDistance = FilteredDistances[0] = Left(LPF_Calc(Distances[0]));
+            }else{
+              LeftDistance = FilteredDistances[0] = 500;
+            }
+          }else if(TxChannel==1){
+            if(Amplitudes[1] > 1000){
+              CenterDistance = FilteredDistances[1] = LPF_Calc2(Distances[1]);
+            }else{
+              CenterDistance = FilteredDistances[1] = 500;
+            }
+          }else {
+            if(Amplitudes[2] > 1000){
+              RightDistance = FilteredDistances[2] = Right(LPF_Calc3(Distances[2]));
+            }else{
+              RightDistance = FilteredDistances[2] = 500;
+            }
+          }
+          TxChannel = 3; // 3 means no data
+          channel = (channel+1)%3;
+          OPT3101_StartMeasurementChannel(channel);
+          i_cont = i_cont + 1;
+        }
+        Controller_Right();
+        //Controller();
+        if(i_cont >= 100){
+            i_cont = 0;
+        }
+
+        WaitForInterrupt();
+
+
         sendUpdates();
         Delay(10);
-        uint32_t k_i = Ki;
-        uint32_t k_p = Kp;
-        uint32_t k_d = Kd;
     }
 }
 
 static void Init_Dist() {
-    SysTick->LOAD = 0x00FFFFFF;           // maximum reload value
-    SysTick->CTRL = 0x00000005;           // enable SysTick with no interrupts
+//    SysTick->LOAD = 0x00FFFFFF;           // maximum reload value
+//    SysTick->CTRL = 0x00000005;           // enable SysTick with no interrupts
     I2CB1_Init(30); // baud rate = 12MHz/30=400kHz
     OPT3101_Init();
     OPT3101_Setup();
     OPT3101_CalibrateInternalCrosstalk();
+    TxChannel = 3;
     OPT3101_StartMeasurementChannel(channel);
-    StartTime = SysTick->VAL;
+//    StartTime = SysTick->VAL;
+    LPF_Init(100,8);          // Setup FIR Filter
+    LPF_Init2(100,8);
+    LPF_Init3(100,8);
 }
 
 static void sendUpdates() {

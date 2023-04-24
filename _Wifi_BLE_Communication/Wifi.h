@@ -32,9 +32,9 @@ extern uint32_t TxChannel;
 extern uint32_t StartTime;
 extern uint32_t TimeToConvert; // in msec
 extern int i;
-extern uint32_t Ki;
-extern uint32_t Kp;
-extern uint32_t Kd;
+//extern uint32_t Ki;
+//extern uint32_t Kp;
+//extern uint32_t Kd;
 extern unsigned char macAddressVal[SL_MAC_ADDR_LEN];
 extern unsigned char macAddressLen;
 extern Network n;
