@@ -24,6 +24,10 @@ extern char centerDist[5];
 extern char rightDist[5];
 extern char rightRPM[5];
 extern char leftRPM[5];
+extern char cur_kp[5];
+extern char cur_ki[5];
+extern char cur_kd[5];
+//extern char set_point[5];
 
 extern uint32_t Distances[3];
 extern uint32_t FilteredDistances[3];
@@ -32,9 +36,10 @@ extern uint32_t TxChannel;
 extern uint32_t StartTime;
 extern uint32_t TimeToConvert; // in msec
 extern int i;
-//extern uint32_t Ki;
-//extern uint32_t Kp;
-//extern uint32_t Kd;
+extern uint32_t Ki;
+extern uint32_t Kp;
+extern uint32_t Kd;
+//extern int32_t SetPoint;
 extern unsigned char macAddressVal[SL_MAC_ADDR_LEN];
 extern unsigned char macAddressLen;
 extern Network n;
@@ -47,6 +52,7 @@ extern _u32  g_Status;
 #define SUBSCRIBE_TOPIC_Ki "MayaNet_SubKi"
 #define SUBSCRIBE_TOPIC_Kp "MayaNet_SubKp"
 #define SUBSCRIBE_TOPIC_Kd "MayaNet_SubKd"
+//#define SUBSCRIBE_TOPIC_SP "MayaNet_SubSP"
 #define DEVICE_NOT_IN_STATION_MODE -0x7D0
 
 
@@ -83,6 +89,7 @@ void messageArrived(MessageData* data);
 void messageArrivedKi(MessageData* data);
 void messageArrivedKp(MessageData* data);
 void messageArrivedKd(MessageData* data);
+void messageArrivedSP(MessageData* data);
 
 void sendMessage(char* message,const char* topicName);
 

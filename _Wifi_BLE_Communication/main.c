@@ -70,9 +70,6 @@ int32_t Left(int32_t left){
 // assumes track is 500mm
 int32_t Mode=1; // 0 stop, 1 run
 float Error;
-uint32_t Ki=1;  // integral controller gain
-uint32_t Kp = 2;  // proportional controller gain      //was 4
-uint32_t Kd = 0;
 uint32_t UR, UL;  // PWM duty 0 to 14,998
 #define TOOCLOSE 400        //was 200
 #define DESIRED 450         //was 250
@@ -169,12 +166,11 @@ void Controller_Left(void){ // runs at 100 Hz
 int main(int argc, char** argv)
 
 {
-    int i_cont = 0;                // Used for...what?
+    int i_cont = 0;
 
     Motor_Init();
     Bump_Init();
     Tachometer_Init();
-//    EnableInterrupts();
     CLI_Configure();
     DisableInterrupts();
     Clock_Init48MHz();
@@ -261,6 +257,12 @@ int main(int argc, char** argv)
         LOOP_FOREVER();
     }
     CLI_Write(" Subscribed to Kd topic \n\r");
+//    rc = MQTTSubscribe(&hMQTTClient, SUBSCRIBE_TOPIC_SP, QOS0, messageArrivedSP);
+//    if (rc != 0) {
+//        CLI_Write(" Failed to subscribe to SP topic \n\r");
+//        LOOP_FOREVER();
+//    }
+//    CLI_Write(" Subscribed to SP topic \n\r");
     rc = MQTTSubscribe(&hMQTTClient, uniqueID, QOS0, messageArrived);
     if (rc != 0) {
         CLI_Write(" Failed to subscribe to uniqueID topic \n\r");
@@ -352,7 +354,12 @@ static void sendUpdates() {
 
     uint8_t bumps = Bump_Read();
     if (bumps == 0xED ) bump_str = ((char*)"No Bump");
-    else bump_str = ((char*)"Bump!!!");
+    else {
+        bump_str = ((char*)"Bump!!!");
+        sendMessage(bump_str,"MayaNet_Bump");
+        Motor_Stop();
+        Delay(100);
+    }
 
     if(pollDistanceSensor())
     {
@@ -367,7 +374,10 @@ static void sendUpdates() {
       OPT3101_StartMeasurementChannel(channel);
       StartTime = SysTick->VAL;
     }
-
+    sprintf(cur_kp,"%d", Kp);
+    sprintf(cur_ki,"%d", Ki);
+    sprintf(cur_kd,"%d", Kd);
+//    sprintf(set_point,"%d", SetPoint);
 
     sendMessage(leftDist,"MayaNet_LeftDist");
     sendMessage(centerDist,"MayaNet_CenterDist");
@@ -375,6 +385,10 @@ static void sendUpdates() {
     sendMessage(bump_str,"MayaNet_Bump");
     sendMessage(leftRPM,"MayaNet_LeftRPM");
     sendMessage(rightRPM,"MayaNet_RightRPM");
+    sendMessage(cur_kp,"MayaNet_PubKp");
+    sendMessage(cur_ki,"MayaNet_PubKi");
+    sendMessage(cur_kd,"MayaNet_PubKd");
+//    sendMessage(set_point,"MayaNet_PubSP");
 }
 
 static void poll_start() {

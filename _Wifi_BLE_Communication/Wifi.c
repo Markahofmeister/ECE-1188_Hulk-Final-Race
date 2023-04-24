@@ -34,6 +34,7 @@
 #define SUBSCRIBE_TOPIC_Kp "MayaNet_SubKp"
 #define SUBSCRIBE_TOPIC_Kd "MayaNet_SubKd"
 #define PUBLISH_TOPIC "MayaNet_Pub"
+#define SUBSCRIBE_TOPIC_SP "MayaNet_SubSP"
 #define BUFF_SIZE 32
 #define DEVICE_NOT_IN_STATION_MODE -0x7D0
 #define APPLICATION_VERSION "1.0.0"
@@ -64,6 +65,15 @@ char centerDist[5];
 char rightDist[5];
 char rightRPM[5];
 char leftRPM[5];
+char cur_kp[5];
+char cur_ki[5];
+char cur_kd[5];
+char set_point[5];
+
+uint32_t Ki=1;  // integral controller gain
+uint32_t Kp = 2;  // proportional controller gain      //was 4
+uint32_t Kd = 0;
+//int32_t SetPoint = 400;
 uint32_t Distances[3];
 uint32_t FilteredDistances[3];
 uint32_t Amplitudes[3];
@@ -444,7 +454,7 @@ void messageArrivedKi(MessageData* data) {
     CLI_Write(tok);
     CLI_Write("\n\r");
 //    Ki = strtoi(tok);
-//    sscanf(tok, "%d", &Ki);
+    sscanf(tok, "%d", &Ki);
 }
 
 void messageArrivedKp(MessageData* data) {
@@ -469,7 +479,7 @@ void messageArrivedKp(MessageData* data) {
     CLI_Write(tok);
     CLI_Write("\n\r");
 //    Kp = strtoi(tok);
-//    sscanf(tok, "%d", &Kp);
+    sscanf(tok, "%d", &Kp);
 }
 
 void messageArrivedKd(MessageData* data) {
@@ -493,8 +503,31 @@ void messageArrivedKd(MessageData* data) {
     CLI_Write(tok);
     CLI_Write("\n\r");
 //    Kd = strtoi(tok);
-//    sscanf(tok, "%d", &Kd);
+    sscanf(tok, "%d", &Kd);
 }
+//void messageArrivedSP(MessageData* data) {
+//    CLI_Write("message arrived SP\n\r");
+//    char buf[BUFF_SIZE];
+//    char *tok;
+//    if (data->topicName->lenstring.len >= BUFF_SIZE) {
+//      printf("Topic name too long!\n\r");
+//        return;
+//    }
+//    if (data->message->payloadlen >= BUFF_SIZE) {
+//        printf("Payload too long!\n\r");
+//        return;
+//    }
+//    strncpy(buf, data->topicName->lenstring.data,
+//        min(BUFF_SIZE, data->topicName->lenstring.len));
+//    buf[data->topicName->lenstring.len] = 0;
+//    strncpy(buf, data->message->payload,min(BUFF_SIZE, data->message->payloadlen));
+//    buf[data->message->payloadlen] = 0;
+//    tok = strtok(buf, " ");
+//    CLI_Write(tok);
+//    CLI_Write("\n\r");
+////    Kd = strtoi(tok);
+//    sscanf(tok, "%d", &SetPoint);
+//}
 void sendMessage(char* message,const char* topicName) {
     int rc = 0;
     MQTTMessage msg;
