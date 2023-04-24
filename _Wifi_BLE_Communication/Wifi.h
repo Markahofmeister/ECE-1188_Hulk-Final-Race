@@ -32,7 +32,9 @@ extern uint32_t TxChannel;
 extern uint32_t StartTime;
 extern uint32_t TimeToConvert; // in msec
 extern int i;
-
+extern uint32_t Ki;
+extern uint32_t Kp;
+extern uint32_t Kd;
 extern unsigned char macAddressVal[SL_MAC_ADDR_LEN];
 extern unsigned char macAddressLen;
 extern Network n;
@@ -42,6 +44,9 @@ extern _u32  g_Status;
 #define MQTT_BROKER_SERVER  "broker.hivemq.com"
 #define SUBSCRIBE_TOPIC "MayaNet_Sub"
 #define PUBLISH_TOPIC "MayaNet_Pub"
+#define SUBSCRIBE_TOPIC_Ki "MayaNet_SubKi"
+#define SUBSCRIBE_TOPIC_Kp "MayaNet_SubKp"
+#define SUBSCRIBE_TOPIC_Kd "MayaNet_SubKd"
 #define DEVICE_NOT_IN_STATION_MODE -0x7D0
 
 
@@ -55,6 +60,7 @@ extern _u32  g_Status;
 //    STATUS_CODE_MAX = -0xBB8
 //}e_AppStatusCodes;
 
+//void Wifi_Init();
 
 uint16_t avg(uint16_t *array, int length);
 
@@ -71,20 +77,21 @@ void SimpleLinkGeneralEventHandler(SlDeviceEvent_t *pDevEvent);
 
 void SimpleLinkSockEventHandler(SlSockEvent_t *pSock);
 
-//static void generateUniqueID();
-//
-//static void messageArrived(MessageData* data);
-//
-//static void sendMessage(char* message,const char* topicName);
+void generateUniqueID();
+
+void messageArrived(MessageData* data);
+void messageArrivedKi(MessageData* data);
+void messageArrivedKp(MessageData* data);
+void messageArrivedKd(MessageData* data);
+
+void sendMessage(char* message,const char* topicName);
 
 void PORT1_IRQHandler(void);
 
 void TA1_0_IRQHandler(void);
 
-//static _i32 configureSimpleLinkToDefaultState();
-//
-//static _i32 establishConnectionWithAP();
-//
-//static _i32 initializeAppVariables();
-//
-//static void displayBanner();
+_i32 configureSimpleLinkToDefaultState();
+
+_i32 establishConnectionWithAP();
+
+_i32 initializeAppVariables();

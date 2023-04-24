@@ -1,56 +1,3 @@
-/*
- * main.c - MQTT Twitter Controlled RGB LED sample application
- *
- * Copyright (C) 2014 Texas Instruments Incorporated - http://www.ti.com/
- *
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *    Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- *    Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the
- *    distribution.
- *
- *    Neither the name of Texas Instruments Incorporated nor the names of
- *    its contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- */
-
-/*
- * Application Name     -   MQTT Twitter Controlled RGB LED
- * Application Overview -   This is a sample application demonstrating how
- *                          to connect to an MQTT broker and publish/subscribe
- *                          to topics. A web server was created to search
- *                          for all public tweets containing the hashtag
- *                          #MSP432LaunchPad and a RGB(#, #, #) control command.
- *                          The web server publishes the RGB() command to all
- *                          LaunchPads running the demo. The application also
- *                          publishes the device's MAC Address when push
- *                          button S1 is pressed on the LaunchPad. The web
- *                          server then tweets the received MAC Address on
- *                          the MSP LaunchPad Twitter account.
- *
- *                          Refer to README.txt for more information
- */
-
 // Standard includes
 #include <stdlib.h>
 #include <string.h>
@@ -74,52 +21,28 @@
 #include "../inc/opt3101.h"
 #include "../inc/Tachometer.h"
 #include "../inc/TA3InputCapture.h"
-//#include "Wifi.h"
+#include "/Users/mhegde/Downloads/Pitt/Spring 2023/1188/ECE-1188_Hulk-Final-Race/_Wifi_BLE_Communication/Wifi.h"
 
 
-
-/*
- * Values for below macros shall be modified per the access-point's (AP) properties
- * SimpleLink device will connect to following AP when the application is executed
- */
 #define SSID_NAME       "1PittBitt"       /* Access point name to connect to. */
 #define SEC_TYPE        SL_SEC_TYPE_WPA_WPA2     /* Security type of the Access point */
 #define PASSKEY         "b3n3dum!"   /* Password in case of secure AP */
 #define PASSKEY_LEN     pal_Strlen(PASSKEY)  /* Password length in case of secure AP */
-
-/*
- * MQTT server and topic properties that shall be modified per application
- */
 #define MQTT_BROKER_SERVER  "broker.hivemq.com"
 #define SUBSCRIBE_TOPIC "MayaNet_Sub"
+#define SUBSCRIBE_TOPIC_Ki "MayaNet_SubKi"
+#define SUBSCRIBE_TOPIC_Kp "MayaNet_SubKp"
+#define SUBSCRIBE_TOPIC_Kd "MayaNet_SubKd"
 #define PUBLISH_TOPIC "MayaNet_Pub"
-
-// MQTT message buffer size
 #define BUFF_SIZE 32
-
 #define DEVICE_NOT_IN_STATION_MODE -0x7D0
-
-
 #define APPLICATION_VERSION "1.0.0"
-
 #define MCLK_FREQUENCY 48000000
 #define PWM_PERIOD 255
-
-#define SL_STOP_TIMEOUT        0xFF
-
+#define SL_STOP_TIMEOUT     0xFF
 #define SMALL_BUF           32
 #define MAX_SEND_BUF_SIZE   512
 #define MAX_SEND_RCV_SIZE   1024
-
-/* Application specific status/error codes */
-//typedef enum{
-//    DEVICE_NOT_IN_STATION_MODE = -0x7D0,        /* Choosing this number to avoid overlap with host-driver's error codes */
-//    HTTP_SEND_ERROR = DEVICE_NOT_IN_STATION_MODE - 1,
-//    HTTP_RECV_ERROR = HTTP_SEND_ERROR - 1,
-//    HTTP_INVALID_RESPONSE = HTTP_RECV_ERROR -1,
-//    STATUS_CODE_MAX = -0xBB8
-//}e_AppStatusCodes;
-
 #define min(X,Y) ((X) < (Y) ? (X) : (Y))
 
 
@@ -183,31 +106,6 @@ const Timer_A_UpModeConfig upConfig =
         TIMER_A_DO_CLEAR                        // Clear value
 };
 
-/*
- * GLOBAL VARIABLES -- End
- */
-
-
-/*
- * STATIC FUNCTION DEFINITIONS -- Start
- */
-static _i32 establishConnectionWithAP();
-static _i32 configureSimpleLinkToDefaultState();
-static _i32 initializeAppVariables();
-static void displayBanner();
-static void messageArrived(MessageData*);
-static void sendMessage(char*,const char*);
-static void generateUniqueID();
-
-
-/*
- * STATIC FUNCTION DEFINITIONS -- End
- */
-
-/*
- * RPM values
- */
-
 // ------------avg------------
 // Simple math function that returns the average value of an array.
 // Input: array is an array of 16-bit unsigned numbers length is the number of elements in 'array'
@@ -240,6 +138,9 @@ int32_t RightSteps;                      // number of tachometer steps of right 
 
 uint16_t Average_RPM_L[TACHBUFF];
 uint16_t Average_RPM_R[TACHBUFF];
+uint32_t Ki;
+uint32_t Kp;
+uint32_t Kd;
 
 /*
  * Distance
@@ -450,242 +351,18 @@ void SimpleLinkSockEventHandler(SlSockEvent_t *pSock)
     }
 }
 
+void generateUniqueID() {
+    CRC32_setSeed(TLV->RANDOM_NUM_1, CRC32_MODE);
+    CRC32_set32BitData(TLV->RANDOM_NUM_2);
+    CRC32_set32BitData(TLV->RANDOM_NUM_3);
+    CRC32_set32BitData(TLV->RANDOM_NUM_4);
+    int i;
+    for (i = 0; i < 6; i++)
+    CRC32_set8BitData(macAddressVal[i], CRC32_MODE);
 
-//}
-/*
- * ASYNCHRONOUS EVENT HANDLERS -- End
- */
-
-
-/*
- * Application's entry point
- */
-//int main(int argc, char** argv)
-//{
-////    EnableInterrupts();         // enable interrupts
-////      Clock_Init48MHz();          // initialize clock
-////      SysTick_Init(48000, 2);     // initialize systick
-//      Motor_Init();               // activate Lab 13 software
-////      TExaS_Init(LOGICANALYZER);  // optional
-////      LaunchPad_Init();         // initialize board shortcuts
-//      Bump_Init();
-//    _i32 retVal = -1;
-//
-//    retVal = initializeAppVariables();
-//    ASSERT_ON_ERROR(retVal);
-//
-//    /* Stop WDT and initialize the system-clock of the MCU */
-//    stopWDT();
-//    initClk();
-//
-//    /*
-//     * RPM
-//     */
-//
-//    int nVal = 0;
-////    Clock_Init48MHz();                     // set system clock to 48 MHz
-//    Tachometer_Init();
-//    EnableInterrupts();
-//
-//
-//    /*
-//     * Distance
-//     */
-//      uint32_t channel = 1;
-////      Clock_Init48MHz();
-////      Motor_Init();               // activate Lab 13 software
-//      SysTick->LOAD = 0x00FFFFFF;           // maximum reload value
-//      SysTick->CTRL = 0x00000005;           // enable SysTick with no interrupts
-//      I2CB1_Init(30); // baud rate = 12MHz/30=400kHz
-//      OPT3101_Init();
-//      OPT3101_Setup();
-//      OPT3101_CalibrateInternalCrosstalk();
-//      OPT3101_StartMeasurementChannel(channel);
-//      StartTime = SysTick->VAL;
-//
-//    /* Configure command line interface */
-//    CLI_Configure();
-//
-//    displayBanner();
-//
-//    /*
-//     * Following function configures the device to default state by cleaning
-//     * the persistent settings stored in NVMEM (viz. connection profiles &
-//     * policies, power policy etc)
-//     *
-//     * Applications may choose to skip this step if the developer is sure
-//     * that the device is in its default state at start of application
-//     *
-//     * Note that all profiles and persistent settings that were done on the
-//     * device will be lost
-//     */
-//    retVal = configureSimpleLinkToDefaultState();
-//    if(retVal < 0)
-//    {
-//        if (DEVICE_NOT_IN_STATION_MODE == retVal)
-//            CLI_Write(" Failed to configure the device in its default state \n\r");
-//
-//        LOOP_FOREVER();
-//    }
-//
-//    CLI_Write(" Device is configured in default state \n\r");
-//
-//    /*
-//     * Assumption is that the device is configured in station mode already
-//     * and it is in its default state
-//     */
-//    retVal = sl_Start(0, 0, 0);
-//    if ((retVal < 0) ||
-//        (ROLE_STA != retVal) )
-//    {
-//        CLI_Write(" Failed to start the device \n\r");
-//        LOOP_FOREVER();
-//    }
-//
-//    CLI_Write(" Device started as STATION \n\r");
-//
-//    /* Connecting to WLAN AP */
-//    retVal = establishConnectionWithAP();
-//    if(retVal < 0)
-//    {
-//        CLI_Write(" Failed to establish connection w/ an AP \n\r");
-//        LOOP_FOREVER();
-//    }
-//
-//    CLI_Write(" Connection established w/ AP and IP is acquired \n\r");
-//
-//    // Obtain MAC Address
-//    sl_NetCfgGet(SL_MAC_ADDRESS_GET,NULL,&macAddressLen,(unsigned char *)macAddressVal);
-//
-//    // Print MAC Addres to be formatted string
-//    snprintf(macStr, sizeof(macStr), "%02x:%02x:%02x:%02x:%02x:%02x",
-//            macAddressVal[0], macAddressVal[1], macAddressVal[2], macAddressVal[3], macAddressVal[4], macAddressVal[5]);
-//
-//    // Generate 32bit unique ID from TLV Random Number and MAC Address
-//    generateUniqueID();
-//
-//    int rc = 0;
-//    unsigned char buf[100];
-//    char* bump_str;
-//    unsigned char readbuf[100];
-//
-//    NewNetwork(&n);
-//    rc = ConnectNetwork(&n, MQTT_BROKER_SERVER, 1883);
-//
-//    if (rc != 0) {
-//        CLI_Write(" Failed to connect to MQTT broker \n\r");
-//        LOOP_FOREVER();
-//    }
-//    CLI_Write(" Connected to MQTT broker \n\r");
-//
-//    MQTTClient(&hMQTTClient, &n, 1000, buf, 100, readbuf, 100);
-//    MQTTPacket_connectData cdata = MQTTPacket_connectData_initializer;
-//    cdata.MQTTVersion = 3;
-//    cdata.clientID.cstring = uniqueID;
-//    rc = MQTTConnect(&hMQTTClient, &cdata);
-//
-//    if (rc != 0) {
-//        CLI_Write(" Failed to start MQTT client \n\r");
-//        LOOP_FOREVER();
-//    }
-//    CLI_Write(" Started MQTT client successfully \n\r");
-//
-//    rc = MQTTSubscribe(&hMQTTClient, SUBSCRIBE_TOPIC, QOS0, messageArrived);
-//
-//    if (rc != 0) {
-//        CLI_Write(" Failed to subscribe to /msp/cc3100/demo topic \n\r");
-//        LOOP_FOREVER();
-//    }
-//    CLI_Write(" Subscribed to /msp/cc3100/demo topic \n\r");
-//
-//    rc = MQTTSubscribe(&hMQTTClient, uniqueID, QOS0, messageArrived);
-//
-//    if (rc != 0) {
-//        CLI_Write(" Failed to subscribe to uniqueID topic \n\r");
-//        LOOP_FOREVER();
-//    }
-//    CLI_Write(" Subscribed to uniqueID topic \n\r");
-//
-//    while(1){
-//        rc = MQTTYield(&hMQTTClient, 10);
-//        if (rc != 0) {
-//            CLI_Write(" MQTT failed to yield \n\r");
-//            LOOP_FOREVER();
-//        }
-//
-//        /*
-//         * Tachometry
-//         */
-//        Tachometer_Get(&LeftTach[i], &LeftDir, &LeftSteps, &RightTach[i], &RightDir, &RightSteps);
-//        //Buffer loop index
-//        i = i + 1;
-//
-//         //Take the running average of the past TACHBUFF # of samples
-//         //Check to see if the Tachometer buffer is full
-//          if(i >= TACHBUFF)
-//          {
-//            //Reset the buffer index
-//            i = 0;
-//
-//            //Compute the Average Revolutions Per Minute over the most recent  TACHBUFF # of Samples
-//            // (1/tach step/cycles) * (12,000,000 cycles/sec) * (60 sec/min) * (1/360 rotation/step)
-//            ActualL = 2000000/avg(LeftTach, TACHBUFF);
-//            ActualR = 2000000/avg(RightTach, TACHBUFF);
-//          }
-//          Average_RPM_L[nVal] = ActualL;
-//          Average_RPM_R[nVal] = ActualR;
-//          nVal++;
-//          nVal = nVal % TACHBUFF;
-//          sprintf(leftRPM, "%d", ActualL);
-//          sprintf(rightRPM, "%d", ActualR);
-//
-//        /*
-//         * Distance
-//         */
-//            uint8_t bumps = Bump_Read();
-//            if (bumps == 0xED ) bump_str = ((char*)"No Bump");
-//            else bump_str = ((char*)"Bump!!!");
-//
-//            if(pollDistanceSensor())
-//            {
-//              TimeToConvert = ((StartTime-SysTick->VAL)&0x00FFFFFF)/48000; // msec
-//              if(TxChannel <= 2)
-//              {
-//                  sprintf(leftDist, "%d",Distances[0]);
-//                  sprintf(centerDist, "%d", Distances[1]);
-//                  sprintf(rightDist,"%d", Distances[2]);
-//              }
-//              channel = (channel+1)%3;
-//              OPT3101_StartMeasurementChannel(channel);
-//              StartTime = SysTick->VAL;
-//            }
-//            sendMessage(leftDist,"MayaNet_LeftDist");
-//            sendMessage(centerDist,"MayaNet_CenterDist");
-//            sendMessage(rightDist,"MayaNet_RightDist");
-//            sendMessage(bump_str,"MayaNet_Bump");
-//            sendMessage(leftRPM,"MayaNet_LeftRPM");
-//            sendMessage(rightRPM,"MayaNet_RightRPM");
-//
-//            publishID = 0;
-////            i = 0;
-////        }
-//
-//        Delay(10);
-//    }
-//}
-
-//static void generateUniqueID() {
-//    CRC32_setSeed(TLV->RANDOM_NUM_1, CRC32_MODE);
-//    CRC32_set32BitData(TLV->RANDOM_NUM_2);
-//    CRC32_set32BitData(TLV->RANDOM_NUM_3);
-//    CRC32_set32BitData(TLV->RANDOM_NUM_4);
-//    int i;
-//    for (i = 0; i < 6; i++)
-//    CRC32_set8BitData(macAddressVal[i], CRC32_MODE);
-//
-//    uint32_t crcResult = CRC32_getResult(CRC32_MODE);
-//    sprintf(uniqueID, "%06X", crcResult);
-//}
+    uint32_t crcResult = CRC32_getResult(CRC32_MODE);
+    sprintf(uniqueID, "%06X", crcResult);
+}
 
 //****************************************************************************
 //
@@ -696,7 +373,7 @@ void SimpleLinkSockEventHandler(SlSockEvent_t *pSock)
 //! \return                        None
 //
 //****************************************************************************
-static void messageArrived(MessageData* data) {
+void messageArrived(MessageData* data) {
     CLI_Write("message arrived\n\r");
 
     char buf[BUFF_SIZE];
@@ -729,20 +406,96 @@ static void messageArrived(MessageData* data) {
     if (strcmp(tok,"go") == 0) {
         CLI_Write(" Motor_LeftSimple(5000,200);");
         Motor_Forward(7500,7500);
-//        leftRPM = "  7500  ";
-//        rightRPM = "   0   ";
     }
 
     if (strcmp(tok,"stop") == 0) {
         CLI_Write(" Motor_StopSimple();");
         Motor_Stop();  // stop the motors
         i = 0;
-//        leftRPM = "   0   ";
-//        rightRPM = "   0   ";
+
     }
 
 }
-static void sendMessage(char* message,const char* topicName) {
+
+void messageArrivedKi(MessageData* data) {
+    CLI_Write("message arrived Ki\n\r");
+
+    char buf[BUFF_SIZE];
+
+    char *tok;
+
+    // Check for buffer overflow
+    if (data->topicName->lenstring.len >= BUFF_SIZE) {
+      printf("Topic name too long!\n\r");
+        return;
+    }
+    if (data->message->payloadlen >= BUFF_SIZE) {
+        printf("Payload too long!\n\r");
+        return;
+    }
+
+    strncpy(buf, data->topicName->lenstring.data,
+        min(BUFF_SIZE, data->topicName->lenstring.len));
+    buf[data->topicName->lenstring.len] = 0;
+
+    strncpy(buf, data->message->payload,min(BUFF_SIZE, data->message->payloadlen));
+    buf[data->message->payloadlen] = 0;
+    tok = strtok(buf, " ");
+    CLI_Write(tok);
+    CLI_Write("\n\r");
+//    Ki = strtoi(tok);
+    sscanf(tok, "%d", &Ki);
+}
+
+void messageArrivedKp(MessageData* data) {
+    CLI_Write("message arrived Kp\n\r");
+    char buf[BUFF_SIZE];
+    char *tok;
+    // Check for buffer overflow
+    if (data->topicName->lenstring.len >= BUFF_SIZE) {
+      printf("Topic name too long!\n\r");
+        return;
+    }
+    if (data->message->payloadlen >= BUFF_SIZE) {
+        printf("Payload too long!\n\r");
+        return;
+    }
+    strncpy(buf, data->topicName->lenstring.data,
+        min(BUFF_SIZE, data->topicName->lenstring.len));
+    buf[data->topicName->lenstring.len] = 0;
+    strncpy(buf, data->message->payload,min(BUFF_SIZE, data->message->payloadlen));
+    buf[data->message->payloadlen] = 0;
+    tok = strtok(buf, " ");
+    CLI_Write(tok);
+    CLI_Write("\n\r");
+//    Kp = strtoi(tok);
+    sscanf(tok, "%d", &Kp);
+}
+
+void messageArrivedKd(MessageData* data) {
+    CLI_Write("message arrived Kd\n\r");
+    char buf[BUFF_SIZE];
+    char *tok;
+    if (data->topicName->lenstring.len >= BUFF_SIZE) {
+      printf("Topic name too long!\n\r");
+        return;
+    }
+    if (data->message->payloadlen >= BUFF_SIZE) {
+        printf("Payload too long!\n\r");
+        return;
+    }
+    strncpy(buf, data->topicName->lenstring.data,
+        min(BUFF_SIZE, data->topicName->lenstring.len));
+    buf[data->topicName->lenstring.len] = 0;
+    strncpy(buf, data->message->payload,min(BUFF_SIZE, data->message->payloadlen));
+    buf[data->message->payloadlen] = 0;
+    tok = strtok(buf, " ");
+    CLI_Write(tok);
+    CLI_Write("\n\r");
+//    Kd = strtoi(tok);
+    sscanf(tok, "%d", &Kd);
+}
+void sendMessage(char* message,const char* topicName) {
     int rc = 0;
     MQTTMessage msg;
     msg.dup = 0;
@@ -834,7 +587,7 @@ void TA1_0_IRQHandler(void)
 
     \return         On success, zero is returned. On error, negative is returned
 */
-static _i32 configureSimpleLinkToDefaultState()
+_i32 configureSimpleLinkToDefaultState()
 {
     SlVersionFull   ver = {0};
     _WlanRxFilterOperationCommandBuff_t  RxFilterIdMask = {0};
@@ -956,23 +709,23 @@ static _i32 configureSimpleLinkToDefaultState()
     \warning    If the WLAN connection fails or we don't acquire an IP address,
                 We will be stuck in this function forever.
 */
-//static _i32 establishConnectionWithAP()
-//{
-//    SlSecParams_t secParams = {0};
-//    _i32 retVal = 0;
-//
-//    secParams.Key = PASSKEY;
-//    secParams.KeyLen = PASSKEY_LEN;
-//    secParams.Type = SEC_TYPE;
-//
-//    retVal = sl_WlanConnect(SSID_NAME, pal_Strlen(SSID_NAME), 0, &secParams, 0);
-//    ASSERT_ON_ERROR(retVal);
-//
-//    /* Wait */
-//    while((!IS_CONNECTED(g_Status)) || (!IS_IP_ACQUIRED(g_Status))) { _SlNonOsMainLoopTask(); }
-//
-//    return SUCCESS;
-//}
+_i32 establishConnectionWithAP()
+{
+    SlSecParams_t secParams = {0};
+    _i32 retVal = 0;
+
+    secParams.Key = PASSKEY;
+    secParams.KeyLen = PASSKEY_LEN;
+    secParams.Type = SEC_TYPE;
+
+    retVal = sl_WlanConnect(SSID_NAME, pal_Strlen(SSID_NAME), 0, &secParams, 0);
+    ASSERT_ON_ERROR(retVal);
+
+    /* Wait */
+    while((!IS_CONNECTED(g_Status)) || (!IS_IP_ACQUIRED(g_Status))) { _SlNonOsMainLoopTask(); }
+
+    return SUCCESS;
+}
 
 /*!
     \brief This function initializes the application variables
@@ -981,7 +734,7 @@ static _i32 configureSimpleLinkToDefaultState()
 
     \return     0 on success, negative error-code on error
 */
-static _i32 initializeAppVariables()
+_i32 initializeAppVariables()
 {
     g_Status = 0;
     pal_Memset(&g_AppData, 0, sizeof(g_AppData));
@@ -989,17 +742,4 @@ static _i32 initializeAppVariables()
     return SUCCESS;
 }
 
-/*!
-    \brief This function displays the application's banner
 
-    \param      None
-
-    \return     None
-*/
-//static void displayBanner()
-//{
-//    CLI_Write("\n\r\n\r");
-//    CLI_Write(" MQTT Twitter Controlled RGB LED - Version ");
-//    CLI_Write(APPLICATION_VERSION);
-//    CLI_Write("\n\r*******************************************************************************\n\r");
-//}
