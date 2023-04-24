@@ -149,6 +149,7 @@ void Controller_Right(void){ // runs at 100 Hz
   }
 }
 
+
 /*void Pause(void){int i;
   while(BumpInt_Read()){ // wait for release
     Clock_Delay1ms(200); LaunchPad_Output(0); // off
