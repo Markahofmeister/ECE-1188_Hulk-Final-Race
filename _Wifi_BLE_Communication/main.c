@@ -7,7 +7,9 @@
 #include "driverlib.h"
 #include "simplelink.h"
 #include "sl_common.h"
+#include "odometry.h"
 #include "MQTTClient.h"
+#include "PID_Motor.h"
 #include "../inc/Bump.h"
 #include "../inc/Clock.h"
 #include "../inc/LaunchPad.h"
@@ -41,6 +43,8 @@ int nVal = 0;
 int rc = 0;
 char* bump_str;
 char input = 'a';
+extern int32_t MyX,MyY;               // position in 0.0001cm
+extern int32_t MyTheta;               // direction units 2*pi/16384 radians (-pi to +pi)
 
 static void Init_Dist();
 static void sendUpdates();
@@ -169,6 +173,8 @@ int main(int argc, char** argv)
     int i_cont = 0;
 
     Motor_Init();
+//    PID_Motor_Init(12, 6, 3);
+//    PID_Motor_Target(250, 250);
     Bump_Init();
     Tachometer_Init();
     CLI_Configure();
@@ -176,6 +182,8 @@ int main(int argc, char** argv)
     Clock_Init48MHz();
     LaunchPad_Init();
     Motor_Stop();
+//    PID_Motor_Stop();
+    Odometry_Init(0,0,NORTH); // facing North
 
     Mode = 1;
     Init_Dist();
@@ -257,12 +265,6 @@ int main(int argc, char** argv)
         LOOP_FOREVER();
     }
     CLI_Write(" Subscribed to Kd topic \n\r");
-//    rc = MQTTSubscribe(&hMQTTClient, SUBSCRIBE_TOPIC_SP, QOS0, messageArrivedSP);
-//    if (rc != 0) {
-//        CLI_Write(" Failed to subscribe to SP topic \n\r");
-//        LOOP_FOREVER();
-//    }
-//    CLI_Write(" Subscribed to SP topic \n\r");
     rc = MQTTSubscribe(&hMQTTClient, uniqueID, QOS0, messageArrived);
     if (rc != 0) {
         CLI_Write(" Failed to subscribe to uniqueID topic \n\r");
@@ -309,7 +311,7 @@ int main(int argc, char** argv)
 
         WaitForInterrupt();
 
-
+        UpdatePosition();
         sendUpdates();
         Delay(10);
     }
@@ -379,6 +381,11 @@ static void sendUpdates() {
     sprintf(cur_kd,"%d", Kd);
 //    sprintf(set_point,"%d", SetPoint);
 
+    Odometry_Get(&MyX,&MyY,&MyTheta);
+    sprintf(x_dist,"%d", MyX);
+    sprintf(y_dist,"%d", MyY);
+    sprintf(theta_val,"%d", MyTheta);
+
     sendMessage(leftDist,"MayaNet_LeftDist");
     sendMessage(centerDist,"MayaNet_CenterDist");
     sendMessage(rightDist,"MayaNet_RightDist");
@@ -388,6 +395,9 @@ static void sendUpdates() {
     sendMessage(cur_kp,"MayaNet_PubKp");
     sendMessage(cur_ki,"MayaNet_PubKi");
     sendMessage(cur_kd,"MayaNet_PubKd");
+    sendMessage(x_dist,"MayaNet_PubX");
+    sendMessage(y_dist,"MayaNet_PubY");
+    sendMessage(theta_val,"MayaNet_PubTheta");
 //    sendMessage(set_point,"MayaNet_PubSP");
 }
 

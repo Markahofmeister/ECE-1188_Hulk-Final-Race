@@ -68,7 +68,9 @@ char leftRPM[5];
 char cur_kp[5];
 char cur_ki[5];
 char cur_kd[5];
-char set_point[5];
+char x_dist[5];
+char y_dist[5];
+char theta_val[5];
 
 uint32_t Ki=1;  // integral controller gain
 uint32_t Kp = 2;  // proportional controller gain      //was 4
