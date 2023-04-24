@@ -23,8 +23,11 @@ void main(void){
     PID_Motor_Init(12, 6, 3);
     PID_Motor_Target(250, 250);
 
+    volatile uint16_t LRPM;
+    volatile uint16_t RRPM;
+
     while(Bump_Read() == 0){
-        PID_Motor_Forward();
+        PID_Motor_Forward(&LRPM, &RRPM);
         Clock_Delay1ms(10); // delay ~0.1 sec at 48 MHz
     }
 }

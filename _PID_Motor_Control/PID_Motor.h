@@ -12,7 +12,7 @@ void PID_Motor_Init(int32_t Kp_input, int32_t Ki_input, int32_t Kd_input);
 
 void PID_Motor_Target(int16_t Left_RPM, int16_t Right_RPM);
 
-void PID_Motor_Forward();
+void PID_Motor_Forward(uint16_t *LeftRPMPtr, uint16_t *RightRPMPtr);
 
 void PID_Motor_Stop(void);
 

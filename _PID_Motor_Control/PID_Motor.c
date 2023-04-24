@@ -66,7 +66,7 @@ void PID_Motor_Target(int16_t Left_RPM, int16_t Right_RPM){
     DesiredR = Right_RPM;
 }
 
-void PID_Motor_Forward(){
+void PID_Motor_Forward(uint16_t *LeftRPMPtr, uint16_t *RightRPMPtr){
     Motor_Forward(UL,UR);
     Tachometer_Get(&LeftTach[i], &LeftDir, &LeftSteps, &RightTach[i], &RightDir, &RightSteps);
     i = i + 1;
@@ -79,6 +79,10 @@ void PID_Motor_Forward(){
         // (1/tach step/cycles) * (12,000,000 cycles/sec) * (60 sec/min) * (1/360 rotation/step)
         ActualL = 2000000/avg(LeftTach, TACHBUFF);
         ActualR = 2000000/avg(RightTach, TACHBUFF);
+
+        // Update Pointers
+        *LeftRPMPtr = ActualL;
+        *RightRPMPtr = ActualR;
 
         //Calculate Error signals
         Error_L = DesiredL - ActualL;
