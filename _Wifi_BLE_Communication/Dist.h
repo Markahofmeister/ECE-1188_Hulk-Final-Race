@@ -11,6 +11,6 @@
 
 void Dist_Init(void);
 void getDist(uint32_t *distanceBuf);
-
+void setMaxDist(uint32_t newDist);
 
 #endif /* DIST_H_ */

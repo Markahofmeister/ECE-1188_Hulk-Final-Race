@@ -43,12 +43,22 @@ Client hMQTTClient;     // MQTT Client
 //uint32_t channel = 1;
 int nVal = 0;
 int rc = 0;
-int targetSpeed = 10000;
+int targetSpeed = 13000;
 int leftSpeed = 0, rightSpeed = 0;
 char* bump_str;
 char input = 'a';
 extern int32_t MyX,MyY;               // position in 0.0001cm
 extern int32_t MyTheta;               // direction units 2*pi/16384 radians (-pi to +pi)
+#define cornerDistForward 1200
+#define cornerDistSides 400
+#define leftThresh 200
+uint32_t divideValue = 1800;
+uint32_t lastDistance = 1000;
+uint32_t distances[3];
+uint32_t left_distance_buffer_prev[3] = {800,800,800};
+uint32_t left_distance_buffer[3];
+int32_t leftDiff;
+
 
 //static void I nit_Dist();
 static void sendUpdates();
@@ -90,6 +100,44 @@ int32_t LeftDistance,CenterDistance,RightDistance; // mm
 #define PWMMIN (PWMNOMINAL-SWING)
 #define PWMMAX (PWMNOMINAL+SWING)
 
+uint32_t avg(uint32_t *array, int length)
+{
+  int i;
+  uint32_t sum = 0;
+
+  for(i=0; i<length; i=i+1)
+  {
+    sum = sum + array[i];
+  }
+  return (sum/length);
+}
+
+void setCenterSpeedRight(uint32_t *distances)
+{
+    uint16_t speedThresh = 2000;
+    float newSpeed = targetSpeed * ((float)distances[1] / (float)divideValue);
+    leftSpeed = newSpeed * (sin((float)distances[2] * 90.0 / divideValue * 0.0174533)) * 1.1;
+    if(leftSpeed < speedThresh) {
+        leftSpeed = speedThresh;
+    }
+    rightSpeed = newSpeed * (sin((float)distances[0] * 90.0 / divideValue * 0.0174533));
+    if(rightSpeed < speedThresh) {
+        rightSpeed = speedThresh;
+    }
+}
+void setCenterSpeedLeft(uint32_t *distances)
+{
+    uint16_t speedThresh = 2000;
+    float newSpeed = targetSpeed * ((float)distances[1] / (float)divideValue);
+    leftSpeed = newSpeed * (sin((float)distances[2] * 90.0 / divideValue * 0.0174533)+0.2);
+    if(leftSpeed < speedThresh) {
+        leftSpeed = speedThresh;
+    }
+    rightSpeed = newSpeed * (sin((float)distances[0] * 90.0 / divideValue * 0.0174533)+0.2) * 1.1;
+    if(rightSpeed < speedThresh) {
+       rightSpeed = speedThresh;
+   }
+}
 
 void Controller(void){ // runs at 100 Hz
   if(Mode){
@@ -181,11 +229,14 @@ void setCenterSpeed(uint32_t *distances)
 int main(int argc, char** argv)
 
 {
-    uint32_t distances[3];
+    int8_t i=0;
+    int8_t j=0;
+
+    distances[0] = 0;
+    distances[1] = 0;
+    distances[2] = 0;
 
     motorPWMInit(15000, 0, 0);
-//    PID_Motor_Init(12, 6, 3);
-//    PID_Motor_Target(250, 250);
     Bump_Init();
     Tachometer_Init();
     CLI_Configure();
@@ -193,14 +244,10 @@ int main(int argc, char** argv)
     Clock_Init48MHz();
     LaunchPad_Init();
     setMotorSpeed(0,0);
-//    PID_Motor_Stop();
     Odometry_Init(0,0,NORTH); // facing North
 
     Mode = 1;
-//    Init_Dist();
     Dist_Init();
-
-    UR = UL = PWMNOMINAL;     //initial power
 
     EnableInterrupts();
 
@@ -327,6 +374,43 @@ int main(int argc, char** argv)
 //        sendUpdates();
         //Delay(10);
         getDist(distances);
+        uint32_t hallwayWidth = distances[0] + distances[2];
+//        uint32_t hallwayWidth = distances[0] + distances[2];
+        if(hallwayWidth < 1100) {
+            divideValue = 600;
+            setMaxDist(600);
+        }
+        else {
+            divideValue = 1800;
+            setMaxDist(1800);
+        }
+
+        if(i%3 == 0){
+            left_distance_buffer[i/3] = distances[0];
+        }
+
+        if (i==6){
+            leftDiff = avg(left_distance_buffer,3) - avg(left_distance_buffer_prev,3);
+            for(j=0; j<3; j++){
+                left_distance_buffer_prev[j] = left_distance_buffer[j];
+            }
+            i=-1;
+                }
+        //uint32_t leftDiff = distances[0] - lastDistance;
+        if(distances[1] < cornerDistForward || (leftDiff > leftThresh && distances[2] > cornerDistSides)) {
+            setCenterSpeedRight(distances);
+            LaunchPad_Output(0x01);
+            //Clock_Delay1ms(100);
+        }
+        else {
+            setCenterSpeedLeft(distances);
+            LaunchPad_Output(0x04);
+        }
+
+        setMotorSpeed(leftSpeed, rightSpeed);
+
+        lastDistance = distances[0];
+        i++;
         setCenterSpeed(distances);
         setMotorSpeed(leftSpeed, rightSpeed);
         UpdatePosition();
@@ -377,7 +461,12 @@ static void sendUpdates() {
         bump_str = ((char*)"Bump!!!");
         sendMessage(bump_str,"MayaNet_Bump");
         setMotorSpeed(0,0);
-        Delay(1000);
+        P2->OUT ^= 0x02;             // toggle red LED on RGB LED
+        setMotorSpeed(0,0);
+        Clock_Delay1ms(1000);         // Must wait 1 second, as per project requirements
+        LaunchPad_Output(0x02);
+        setMotorSpeed(-1000, -10000);
+        Clock_Delay1ms(250);
     }
 
 //    if(pollDistanceSensor())

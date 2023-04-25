@@ -40,17 +40,17 @@ int32_t Error_R_chng = 0;
 int32_t t;
 uint8_t i_motor = 0;
 
-uint16_t avg(uint16_t *array, int length)
-{
-  int i_motor;
-  uint32_t sum = 0;
-
-  for(i_motor=0; i_motor<length; i_motor=i_motor+1)
-  {
-    sum = sum + array[i_motor];
-  }
-  return (sum/length);
-}
+//uint16_t avg(uint16_t *array, int length)
+//{
+//  int i_motor;
+//  uint32_t sum = 0;
+//
+//  for(i_motor=0; i_motor<length; i_motor=i_motor+1)
+//  {
+//    sum = sum + array[i_motor];
+//  }
+//  return (sum/length);
+//}
 
 void PID_Motor_Init(int32_t Kp_motor_input, int32_t Ki_motor_input, int32_t Kd_motor_input){
     Motor_Init();

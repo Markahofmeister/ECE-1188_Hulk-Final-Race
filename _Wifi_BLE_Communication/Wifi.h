@@ -70,7 +70,7 @@ extern _u32  g_Status;
 
 //void Wifi_Init();
 
-uint16_t avg(uint16_t *array, int length);
+//uint16_t avg(uint16_t *array, int length);
 
 //bool pollDistanceSensor(void);
 
