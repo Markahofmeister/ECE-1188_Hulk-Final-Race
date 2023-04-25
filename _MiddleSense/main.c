@@ -12,9 +12,21 @@ int targetSpeed = 10000;
 int leftSpeed = 0, rightSpeed = 0;
 #define cornerDistForward 900
 #define cornerDistSides 900
-#define leftThresh 100
+#define leftThresh 200
 uint8_t lap = 1;
-uint32_t lastDistance = 1000;
+int32_t lastDistance = 1000;
+
+int32_t avg(uint32_t *array, int length)
+{
+  int i;
+  uint32_t sum = 0;
+
+  for(i=0; i<length; i=i+1)
+  {
+    sum = sum + array[i];
+  }
+  return (sum/length);
+}
 
 void setCenterSpeedRight(uint32_t *distances)
 {
@@ -31,7 +43,11 @@ void setCenterSpeedLeft(uint32_t *distances)
 
 int main()
 {
-    uint32_t distances[3];
+    int32_t distances[3];
+    int32_t left_distance_buffer_prev[5] = {1000,1000,1000,1000,1000};
+    int32_t left_distance_buffer[5];
+    int32_t leftDiff;
+    uint8_t i=0;
     distances[0] = 0;
     distances[1] = 0;
     distances[2] = 0;
@@ -89,7 +105,11 @@ int main()
         }*/
 
         getDist(distances);
-        uint32_t leftDiff = distances[0] - lastDistance;
+        left_distance_buffer[i] = distances[0];
+        if (i==4){
+            leftDiff = avg(left_distance_buffer[i],5) - avg(left_distance_buffer_prev[i],5);
+        }
+        //uint32_t leftDiff = distances[0] - lastDistance;
         if(distances[1] < cornerDistForward || (leftDiff > leftThresh && distances[2] > cornerDistSides)) {
             setCenterSpeedRight(distances);
             LaunchPad_Output(0x01);

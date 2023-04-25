@@ -31,7 +31,6 @@ ORDERED_OBJS += \
 "./main.obj" \
 "./odometry.obj" \
 "./opt3101.obj" \
-"./pidController.obj" \
 "./startup_msp432p401r_ccs.obj" \
 "./system_msp432p401r.obj" \
 "../msp432p401r.cmd" \
@@ -177,8 +176,8 @@ _MiddleSense.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "Bump.obj" "BumpInt.obj" "Clock.obj" "CortexM.obj" "CustomMotor.obj" "Dist.obj" "FFT.obj" "I2CB1.obj" "LPF.obj" "Lab21_OPT3101_TestMain.obj" "LaunchPad.obj" "Motor.obj" "PWM.obj" "SSD1306.obj" "TA3InputCapture.obj" "Tachometer.obj" "blinker.obj" "fixed.obj" "main.obj" "odometry.obj" "opt3101.obj" "pidController.obj" "startup_msp432p401r_ccs.obj" "system_msp432p401r.obj" 
-	-$(RM) "Bump.d" "BumpInt.d" "Clock.d" "CortexM.d" "CustomMotor.d" "Dist.d" "FFT.d" "I2CB1.d" "LPF.d" "Lab21_OPT3101_TestMain.d" "LaunchPad.d" "Motor.d" "PWM.d" "SSD1306.d" "TA3InputCapture.d" "Tachometer.d" "blinker.d" "fixed.d" "main.d" "odometry.d" "opt3101.d" "pidController.d" "startup_msp432p401r_ccs.d" "system_msp432p401r.d" 
+	-$(RM) "Bump.obj" "BumpInt.obj" "Clock.obj" "CortexM.obj" "CustomMotor.obj" "Dist.obj" "FFT.obj" "I2CB1.obj" "LPF.obj" "Lab21_OPT3101_TestMain.obj" "LaunchPad.obj" "Motor.obj" "PWM.obj" "SSD1306.obj" "TA3InputCapture.obj" "Tachometer.obj" "blinker.obj" "fixed.obj" "main.obj" "odometry.obj" "opt3101.obj" "startup_msp432p401r_ccs.obj" "system_msp432p401r.obj" 
+	-$(RM) "Bump.d" "BumpInt.d" "Clock.d" "CortexM.d" "CustomMotor.d" "Dist.d" "FFT.d" "I2CB1.d" "LPF.d" "Lab21_OPT3101_TestMain.d" "LaunchPad.d" "Motor.d" "PWM.d" "SSD1306.d" "TA3InputCapture.d" "Tachometer.d" "blinker.d" "fixed.d" "main.d" "odometry.d" "opt3101.d" "startup_msp432p401r_ccs.d" "system_msp432p401r.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

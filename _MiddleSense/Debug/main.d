@@ -1,7 +1,7 @@
 # FIXED
 
 main.obj: ../main.c
-main.obj: C:/Users/marka/Spring-2023/Cyber-Physical_Systems/final-race/ECE-1188_Hullk-Final-Race/_MiddleSense/Dist.h
+main.obj: C:/Users/Bronco/Documents/ECE-1188_Hulk-Final-Race/_MiddleSense/Dist.h
 main.obj: C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/stdint.h
 main.obj: C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/_ti_config.h
 main.obj: C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/linkage.h
@@ -20,19 +20,19 @@ main.obj: C:/ti/ccs1210/ccs/ccs_base/arm/include/CMSIS/core_cm4.h
 main.obj: C:/ti/ccs1210/ccs/ccs_base/arm/include/CMSIS/cmsis_compiler.h
 main.obj: C:/ti/ccs1210/ccs/ccs_base/arm/include/CMSIS/cmsis_ccs.h
 main.obj: C:/ti/ccs1210/ccs/ccs_base/arm/include/system_msp432p401r.h
-main.obj: C:/Users/marka/Spring-2023/Cyber-Physical_Systems/final-race/ECE-1188_Hullk-Final-Race/_MiddleSense/Clock.h
-main.obj: C:/Users/marka/Spring-2023/Cyber-Physical_Systems/final-race/ECE-1188_Hullk-Final-Race/_MiddleSense/I2CB1.h
-main.obj: C:/Users/marka/Spring-2023/Cyber-Physical_Systems/final-race/ECE-1188_Hullk-Final-Race/_MiddleSense/CortexM.h
-main.obj: C:/Users/marka/Spring-2023/Cyber-Physical_Systems/final-race/ECE-1188_Hullk-Final-Race/_MiddleSense/opt3101.h
+main.obj: C:/Users/Bronco/Documents/ECE-1188_Hulk-Final-Race/_MiddleSense/Clock.h
+main.obj: C:/Users/Bronco/Documents/ECE-1188_Hulk-Final-Race/_MiddleSense/I2CB1.h
+main.obj: C:/Users/Bronco/Documents/ECE-1188_Hulk-Final-Race/_MiddleSense/CortexM.h
+main.obj: C:/Users/Bronco/Documents/ECE-1188_Hulk-Final-Race/_MiddleSense/opt3101.h
 main.obj: C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/stdbool.h
-main.obj: C:/Users/marka/Spring-2023/Cyber-Physical_Systems/final-race/ECE-1188_Hullk-Final-Race/_MiddleSense/LPF.h
+main.obj: C:/Users/Bronco/Documents/ECE-1188_Hulk-Final-Race/_MiddleSense/LPF.h
 main.obj: C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/math.h
 main.obj: C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/_defs.h
 main.obj: C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/machine/_limits.h
 main.obj: ../Clock.h
 main.obj: ../pidController.h
-main.obj: C:/Users/marka/Spring-2023/Cyber-Physical_Systems/final-race/ECE-1188_Hullk-Final-Race/_MiddleSense/CustomMotor.h
-main.obj: C:/Users/marka/Spring-2023/Cyber-Physical_Systems/final-race/ECE-1188_Hullk-Final-Race/_MiddleSense/CortexM.h
+main.obj: C:/Users/Bronco/Documents/ECE-1188_Hulk-Final-Race/_MiddleSense/CustomMotor.h
+main.obj: C:/Users/Bronco/Documents/ECE-1188_Hulk-Final-Race/_MiddleSense/CortexM.h
 main.obj: ../Clock.h
 main.obj: ../CortexM.h
 main.obj: ../../inc/TimerA1.h
@@ -43,7 +43,7 @@ main.obj: ../LaunchPad.h
 
 ../main.c:
 
-C:/Users/marka/Spring-2023/Cyber-Physical_Systems/final-race/ECE-1188_Hullk-Final-Race/_MiddleSense/Dist.h:
+C:/Users/Bronco/Documents/ECE-1188_Hulk-Final-Race/_MiddleSense/Dist.h:
 
 C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/stdint.h:
 
@@ -81,17 +81,17 @@ C:/ti/ccs1210/ccs/ccs_base/arm/include/CMSIS/cmsis_ccs.h:
 
 C:/ti/ccs1210/ccs/ccs_base/arm/include/system_msp432p401r.h:
 
-C:/Users/marka/Spring-2023/Cyber-Physical_Systems/final-race/ECE-1188_Hullk-Final-Race/_MiddleSense/Clock.h:
+C:/Users/Bronco/Documents/ECE-1188_Hulk-Final-Race/_MiddleSense/Clock.h:
 
-C:/Users/marka/Spring-2023/Cyber-Physical_Systems/final-race/ECE-1188_Hullk-Final-Race/_MiddleSense/I2CB1.h:
+C:/Users/Bronco/Documents/ECE-1188_Hulk-Final-Race/_MiddleSense/I2CB1.h:
 
-C:/Users/marka/Spring-2023/Cyber-Physical_Systems/final-race/ECE-1188_Hullk-Final-Race/_MiddleSense/CortexM.h:
+C:/Users/Bronco/Documents/ECE-1188_Hulk-Final-Race/_MiddleSense/CortexM.h:
 
-C:/Users/marka/Spring-2023/Cyber-Physical_Systems/final-race/ECE-1188_Hullk-Final-Race/_MiddleSense/opt3101.h:
+C:/Users/Bronco/Documents/ECE-1188_Hulk-Final-Race/_MiddleSense/opt3101.h:
 
 C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/stdbool.h:
 
-C:/Users/marka/Spring-2023/Cyber-Physical_Systems/final-race/ECE-1188_Hullk-Final-Race/_MiddleSense/LPF.h:
+C:/Users/Bronco/Documents/ECE-1188_Hulk-Final-Race/_MiddleSense/LPF.h:
 
 C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/math.h:
 
@@ -103,9 +103,9 @@ C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/machine/_limits.h
 
 ../pidController.h:
 
-C:/Users/marka/Spring-2023/Cyber-Physical_Systems/final-race/ECE-1188_Hullk-Final-Race/_MiddleSense/CustomMotor.h:
+C:/Users/Bronco/Documents/ECE-1188_Hulk-Final-Race/_MiddleSense/CustomMotor.h:
 
-C:/Users/marka/Spring-2023/Cyber-Physical_Systems/final-race/ECE-1188_Hullk-Final-Race/_MiddleSense/CortexM.h:
+C:/Users/Bronco/Documents/ECE-1188_Hulk-Final-Race/_MiddleSense/CortexM.h:
 
 ../Clock.h:
 

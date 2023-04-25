@@ -1,7 +1,7 @@
 # FIXED
 
 CustomMotor.obj: ../CustomMotor.c
-CustomMotor.obj: C:/Users/marka/Spring-2023/Cyber-Physical_Systems/final-race/ECE-1188_Hullk-Final-Race/_MiddleSense/CustomMotor.h
+CustomMotor.obj: C:/Users/Bronco/Documents/ECE-1188_Hulk-Final-Race/_MiddleSense/CustomMotor.h
 CustomMotor.obj: C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/stdint.h
 CustomMotor.obj: C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/_ti_config.h
 CustomMotor.obj: C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/linkage.h
@@ -20,11 +20,11 @@ CustomMotor.obj: C:/ti/ccs1210/ccs/ccs_base/arm/include/CMSIS/core_cm4.h
 CustomMotor.obj: C:/ti/ccs1210/ccs/ccs_base/arm/include/CMSIS/cmsis_compiler.h
 CustomMotor.obj: C:/ti/ccs1210/ccs/ccs_base/arm/include/CMSIS/cmsis_ccs.h
 CustomMotor.obj: C:/ti/ccs1210/ccs/ccs_base/arm/include/system_msp432p401r.h
-CustomMotor.obj: C:/Users/marka/Spring-2023/Cyber-Physical_Systems/final-race/ECE-1188_Hullk-Final-Race/_MiddleSense/CortexM.h
+CustomMotor.obj: C:/Users/Bronco/Documents/ECE-1188_Hulk-Final-Race/_MiddleSense/CortexM.h
 
 ../CustomMotor.c:
 
-C:/Users/marka/Spring-2023/Cyber-Physical_Systems/final-race/ECE-1188_Hullk-Final-Race/_MiddleSense/CustomMotor.h:
+C:/Users/Bronco/Documents/ECE-1188_Hulk-Final-Race/_MiddleSense/CustomMotor.h:
 
 C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/stdint.h:
 
@@ -62,5 +62,5 @@ C:/ti/ccs1210/ccs/ccs_base/arm/include/CMSIS/cmsis_ccs.h:
 
 C:/ti/ccs1210/ccs/ccs_base/arm/include/system_msp432p401r.h:
 
-C:/Users/marka/Spring-2023/Cyber-Physical_Systems/final-race/ECE-1188_Hullk-Final-Race/_MiddleSense/CortexM.h:
+C:/Users/Bronco/Documents/ECE-1188_Hulk-Final-Race/_MiddleSense/CortexM.h:
 
