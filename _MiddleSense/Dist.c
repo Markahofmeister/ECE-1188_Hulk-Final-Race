@@ -5,7 +5,12 @@ uint32_t FilteredDistances[3];
 uint32_t Amplitudes[3];
 uint32_t TxChannel;
 uint32_t channel;
+uint32_t maxDist = 1800;
 int i;
+
+void setMaxDist(uint32_t newDist) {
+    maxDist = newDist;
+}
 
 bool pollDistanceSensor(void)
 {
@@ -49,22 +54,22 @@ void getDist(uint32_t *distanceBuf)
 {
     if(TxChannel <= 2){ // 0,1,2 means new data
       if(TxChannel==0){
-        if(Distances[0] < 1000){
+        if(Distances[0] < maxDist){
             distanceBuf[0] = Distances[0];
         }else{
-            distanceBuf[0] = 1000;
+            distanceBuf[0] = maxDist;
         }
       }else if(TxChannel==1){
-        if(Distances[1] < 1000){
+        if(Distances[1] < maxDist){
             distanceBuf[1] = Distances[1];
         }else{
-            distanceBuf[1] = 1000;
+            distanceBuf[1] = maxDist;
         }
       }else {
-        if(Distances[2] < 1000){
+        if(Distances[2] < maxDist){
             distanceBuf[2] = Distances[2];
         }else{
-            distanceBuf[2] = 1000;
+            distanceBuf[2] = maxDist;
         }
       }
       TxChannel = 3; // 3 means no data

@@ -10,13 +10,15 @@
 
 int targetSpeed = 10000;
 int leftSpeed = 0, rightSpeed = 0;
-#define cornerDistForward 900
-#define cornerDistSides 900
+#define cornerDistForward 1200
+#define cornerDistSides 400
 #define leftThresh 200
-uint8_t lap = 1;
-int32_t lastDistance = 1000;
 
-int32_t avg(uint32_t *array, int length)
+uint32_t divideValue = 1800;
+
+uint32_t lastDistance = 1000;
+
+uint32_t avg(uint32_t *array, int length)
 {
   int i;
   uint32_t sum = 0;
@@ -30,24 +32,43 @@ int32_t avg(uint32_t *array, int length)
 
 void setCenterSpeedRight(uint32_t *distances)
 {
-    int newSpeed = targetSpeed * distances[1] / 1000.0;
-    leftSpeed = newSpeed *sin((float)distances[2] * 90.0 / 1000.0 * 0.0174533) * 1.1;
-    rightSpeed = newSpeed *sin((float)distances[0] * 90.0 / 1000.0 * 0.0174533);
+    uint16_t speedThresh = 7000;
+    float newSpeed = targetSpeed * ((float)distances[1] / (float)divideValue);
+    leftSpeed = newSpeed * (sin((float)distances[2] * 90.0 / divideValue * 0.0174533)+0.2) * 1.5;
+    if(leftSpeed < speedThresh) {
+        leftSpeed = speedThresh;
+    }
+    rightSpeed = newSpeed * (sin((float)distances[0] * 90.0 / divideValue * 0.0174533)+0.2);
+    if(rightSpeed < speedThresh) {
+        rightSpeed = speedThresh;
+    }
 }
 void setCenterSpeedLeft(uint32_t *distances)
 {
-    int newSpeed = targetSpeed * distances[1] / 1000.0;
-    leftSpeed = newSpeed *sin((float)distances[2] * 90.0 / 1000.0 * 0.0174533);
-    rightSpeed = newSpeed *sin((float)distances[0] * 90.0 / 1000.0 * 0.0174533) * 1.1;
+    uint16_t speedThresh = 5000;
+    float newSpeed = targetSpeed * ((float)distances[1] / (float)divideValue);
+    leftSpeed = newSpeed * (sin((float)distances[2] * 90.0 / divideValue * 0.0174533)+0.2);
+    if(leftSpeed < speedThresh) {
+        leftSpeed = speedThresh;
+    }
+    rightSpeed = newSpeed * (sin((float)distances[0] * 90.0 / divideValue * 0.0174533)+0.2) * 1.1;
+    if(rightSpeed < speedThresh) {
+       rightSpeed = speedThresh;
+   }
 }
+
+uint32_t distances[3];
+uint32_t left_distance_buffer_prev[3] = {800,800,800};
+uint32_t left_distance_buffer[3];
+int32_t leftDiff;
+
 
 int main()
 {
-    int32_t distances[3];
-    int32_t left_distance_buffer_prev[5] = {1000,1000,1000,1000,1000};
-    int32_t left_distance_buffer[5];
-    int32_t leftDiff;
-    uint8_t i=0;
+
+    int8_t i=0;
+    int8_t j=0;
+
     distances[0] = 0;
     distances[1] = 0;
     distances[2] = 0;
@@ -63,56 +84,34 @@ int main()
     {
 
 
-        /*switch(lap) {
-
-            case 1:
-
-                getDist(distances);
-                setCenterSpeedRight(distances);
-                setMotorSpeed(leftSpeed, rightSpeed);
-
-                if(distances[1] < cornerDist && distances[2] > cornerDist) {         //If we've detected a corner, turn 90 degrees
-                     LaunchPad_Output(0x01);
-                     lap++;
-                     Clock_Delay1ms(1000);
-                }
-            break;
-            case 2:
-
-                getDist(distances);
-                setCenterSpeedLeft(distances);
-                setMotorSpeed(leftSpeed, rightSpeed);
-                if(distances[1] < cornerDist && distances[0] > cornerDist) {         //If we've detected a corner, turn 90 degrees
-                     LaunchPad_Output(0x02);
-                     lap++;
-                     Clock_Delay1ms(1000);
-                }
-
-            break;
-            case 3:
-
-                getDist(distances);
-                setCenterSpeedLeft(distances);
-                setMotorSpeed(leftSpeed, rightSpeed);
-                if(distances[1] < cornerDist && distances[0] > cornerDist) {         //If we've detected a corner, turn 90 degrees
-                     LaunchPad_Output(0x04);
-                     lap++;
-                     Clock_Delay1ms(1000);
-                }
-
-            break;
-
-        }*/
-
         getDist(distances);
-        left_distance_buffer[i] = distances[0];
-        if (i==4){
-            leftDiff = avg(left_distance_buffer[i],5) - avg(left_distance_buffer_prev[i],5);
+
+        uint32_t hallwayWidth = distances[0] + distances[2];
+        if(hallwayWidth < 1300) {
+            divideValue = 1000;
+            setMaxDist(1000);
+        }
+        else {
+            divideValue = 1800;
+            setMaxDist(1800);
+        }
+
+        if(i%3 == 0){
+            left_distance_buffer[i/3] = distances[0];
+        }
+
+        if (i==6){
+            leftDiff = avg(left_distance_buffer,3) - avg(left_distance_buffer_prev,3);
+            for(j=0; j<3; j++){
+                left_distance_buffer_prev[j] = left_distance_buffer[j];
+            }
+            i=-1;
         }
         //uint32_t leftDiff = distances[0] - lastDistance;
         if(distances[1] < cornerDistForward || (leftDiff > leftThresh && distances[2] > cornerDistSides)) {
             setCenterSpeedRight(distances);
             LaunchPad_Output(0x01);
+            //Clock_Delay1ms(100);
         }
         else {
             setCenterSpeedLeft(distances);
@@ -122,6 +121,7 @@ int main()
         setMotorSpeed(leftSpeed, rightSpeed);
 
         lastDistance = distances[0];
+        i++;
 
     }
 
@@ -130,18 +130,22 @@ int main()
 void PORT4_IRQHandler(void){            // Deal with Crashes
 
     uint8_t bsMask = 0xED;
-    Clock_Delay1us(10);         // software debounce
+    Clock_Delay1us(20);         // software debounce
     P4->IFG &= ~bsMask;         // acknowledge and clear flag
     P2->OUT ^= 0x02;             // toggle red LED on RGB LED
     setMotorSpeed(0,0);
     Clock_Delay1ms(1000);         // Must wait 1 second, as per project requirements
     LaunchPad_Output(0x02);
+    uint8_t bump_input = BumpInt_Read();
+    //getDist(distances);
+    //if (distances[2] < distances[0] && distances[2] < divideValue) {
+       setMotorSpeed(-1000, -10000);
+    //}
+    //else {
+       // setMotorSpeed(-1000, -5000);
+    //}
 
-    while(1);               //Remove and implement crash recovery
+    Clock_Delay1ms(250);
 
-    /*                            // How to deal with a crash?
-    Motor_Backward(2500,2500);
-    Clock_Delay1ms(1000);
-    */
 }
 

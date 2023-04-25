@@ -87,7 +87,7 @@ void BumpInt_Init(void){
 // bit 0 Bump0
 uint8_t BumpInt_Read(void){
 
-    return (P4->IN&0xED);   // Read 6 most LSB of port 4
+    return (~P4->IN&0xED);   // Read 6 most LSB of port 4
 
 }
 

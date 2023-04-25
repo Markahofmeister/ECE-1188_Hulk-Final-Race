@@ -75,7 +75,6 @@ void PWM_LeftMotorBackwards(uint16_t duty)
     P5->OUT |= LEFT_DIRECTION;
     TIMER_A0->CCR[4] = duty;
 }
-
 void PWM_RightMotorBackwards(uint16_t duty)
 {
     //Motor go backward with new duty cycle
