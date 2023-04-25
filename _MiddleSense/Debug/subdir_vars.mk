@@ -25,6 +25,7 @@ C_SRCS += \
 ../SSD1306.c \
 ../TA3InputCapture.c \
 ../Tachometer.c \
+../UART0.c \
 ../blinker.c \
 ../fixed.c \
 ../main.c \
@@ -50,6 +51,7 @@ C_DEPS += \
 ./SSD1306.d \
 ./TA3InputCapture.d \
 ./Tachometer.d \
+./UART0.d \
 ./blinker.d \
 ./fixed.d \
 ./main.d \
@@ -75,6 +77,7 @@ OBJS += \
 ./SSD1306.obj \
 ./TA3InputCapture.obj \
 ./Tachometer.obj \
+./UART0.obj \
 ./blinker.obj \
 ./fixed.obj \
 ./main.obj \
@@ -100,6 +103,7 @@ OBJS__QUOTED += \
 "SSD1306.obj" \
 "TA3InputCapture.obj" \
 "Tachometer.obj" \
+"UART0.obj" \
 "blinker.obj" \
 "fixed.obj" \
 "main.obj" \
@@ -125,6 +129,7 @@ C_DEPS__QUOTED += \
 "SSD1306.d" \
 "TA3InputCapture.d" \
 "Tachometer.d" \
+"UART0.d" \
 "blinker.d" \
 "fixed.d" \
 "main.d" \
@@ -150,6 +155,7 @@ C_SRCS__QUOTED += \
 "../SSD1306.c" \
 "../TA3InputCapture.c" \
 "../Tachometer.c" \
+"../UART0.c" \
 "../blinker.c" \
 "../fixed.c" \
 "../main.c" \

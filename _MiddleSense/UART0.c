@@ -72,7 +72,7 @@ void UART0_Init(void){
   EUSCI_A0->CTLW0 = 0x00C1;
                                  // set the baud rate
                                  // N = clock/baud rate = 12,000,000/115,200 = 104
-  EUSCI_A0->BRW = 104;           // UCBR = baud rate = int(N) = 1250
+  EUSCI_A0->BRW = 1250;           // UCBR = baud rate = int(N) = 1250
   EUSCI_A0->MCTLW &= ~0xFFF1;    // clear first and second modulation stage bit fields
   P1->SEL0 |= 0x0C;
   P1->SEL1 &= ~0x0C;             // configure P1.3 and P1.2 as primary module function
@@ -85,7 +85,7 @@ void UART0_Init(void){
 // Input: none
 // Output: ASCII code for key typed
 char UART0_InChar(void){
-  if ((EUSCI_A0->IFG&0x01) == 0) return 'a';
+  if((EUSCI_A0->IFG&0x01) == 0) return 'a';
   return((char)(EUSCI_A0->RXBUF));
 }
 

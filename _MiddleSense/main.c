@@ -7,16 +7,21 @@
 #include "odometry.h"
 #include "BumpInt.h"
 #include "LaunchPad.h"
+#include "../inc/UART0.h"
 
 int targetSpeed = 13000;
 int leftSpeed = 0, rightSpeed = 0;
 #define cornerDistForward 1200
 #define cornerDistSides 400
 #define leftThresh 200
+char input = 'a';
 
 uint32_t divideValue = 1800;
 
 uint32_t lastDistance = 1000;
+
+static void poll_start();
+static void check_stop();
 
 uint32_t avg(uint32_t *array, int length)
 {
@@ -80,6 +85,8 @@ int main()
     EnableInterrupts();
     Dist_Init();
     Odometry_Init(0, 0, 0);
+    UART0_Init();
+    poll_start();
     while(1)
     {
 
@@ -123,6 +130,8 @@ int main()
         lastDistance = distances[0];
         i++;
 
+        check_stop();
+
     }
 
 }
@@ -146,3 +155,20 @@ void PORT4_IRQHandler(void){            // Deal with Crashes
 
 }
 
+static void poll_start() {
+    while (input != 'f') {
+        input = UART0_InChar();
+    }
+    return;
+}
+
+static void check_stop() {
+    input = UART0_InChar();
+    if (input == 's') {
+        while (input != 'f') {
+            input = UART0_InChar();
+            setMotorSpeed(0,0);
+        }
+    }
+    return;
+}

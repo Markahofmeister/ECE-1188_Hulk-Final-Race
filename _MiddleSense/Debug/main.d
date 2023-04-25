@@ -40,6 +40,7 @@ main.obj: ../Tachometer.h
 main.obj: ../odometry.h
 main.obj: ../BumpInt.h
 main.obj: ../LaunchPad.h
+main.obj: ../../inc/UART0.h
 
 ../main.c:
 
@@ -120,4 +121,6 @@ C:/Users/marka/Spring-2023/Cyber-Physical_Systems/final-race/ECE-1188_Hullk-Fina
 ../BumpInt.h:
 
 ../LaunchPad.h:
+
+../../inc/UART0.h:
 
