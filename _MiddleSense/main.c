@@ -8,7 +8,7 @@
 #include "BumpInt.h"
 #include "LaunchPad.h"
 
-int targetSpeed = 10000;
+int targetSpeed = 13000;
 int leftSpeed = 0, rightSpeed = 0;
 #define cornerDistForward 1200
 #define cornerDistSides 400
@@ -34,11 +34,11 @@ void setCenterSpeedRight(uint32_t *distances)
 {
     uint16_t speedThresh = 2000;
     float newSpeed = targetSpeed * ((float)distances[1] / (float)divideValue);
-    leftSpeed = newSpeed * (sin((float)distances[2] * 90.0 / divideValue * 0.0174533) + 0.2) * 1.1;
+    leftSpeed = newSpeed * (sin((float)distances[2] * 90.0 / divideValue * 0.0174533)) * 1.1;
     if(leftSpeed < speedThresh) {
         leftSpeed = speedThresh;
     }
-    rightSpeed = newSpeed * (sin((float)distances[0] * 90.0 / divideValue * 0.0174533) + 0.2);
+    rightSpeed = newSpeed * (sin((float)distances[0] * 90.0 / divideValue * 0.0174533));
     if(rightSpeed < speedThresh) {
         rightSpeed = speedThresh;
     }
@@ -47,11 +47,11 @@ void setCenterSpeedLeft(uint32_t *distances)
 {
     uint16_t speedThresh = 2000;
     float newSpeed = targetSpeed * ((float)distances[1] / (float)divideValue);
-    leftSpeed = newSpeed * (sin((float)distances[2] * 90.0 / divideValue * 0.0174533)+0.2);
+    leftSpeed = newSpeed * (sin((float)distances[2] * 90.0 / divideValue * 0.0174533));
     if(leftSpeed < speedThresh) {
         leftSpeed = speedThresh;
     }
-    rightSpeed = newSpeed * (sin((float)distances[0] * 90.0 / divideValue * 0.0174533)+0.2) * 1.1;
+    rightSpeed = newSpeed * (sin((float)distances[0] * 90.0 / divideValue * 0.0174533)) * 1.1;
     if(rightSpeed < speedThresh) {
        rightSpeed = speedThresh;
    }
