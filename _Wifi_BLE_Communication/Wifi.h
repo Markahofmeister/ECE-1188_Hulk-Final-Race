@@ -27,9 +27,9 @@ extern char leftRPM[5];
 extern char cur_kp[5];
 extern char cur_ki[5];
 extern char cur_kd[5];
-extern char x_dist[5];
-extern char y_dist[5];
-extern char theta_val[5];
+extern char x_dist[10];
+extern char y_dist[10];
+extern char theta_val[10];
 //extern char set_point[5];
 
 extern uint32_t Distances[3];
@@ -72,7 +72,7 @@ extern _u32  g_Status;
 
 uint16_t avg(uint16_t *array, int length);
 
-bool pollDistanceSensor(void);
+//bool pollDistanceSensor(void);
 
 void SimpleLinkWlanEventHandler(SlWlanEvent_t *pWlanEvent);
 

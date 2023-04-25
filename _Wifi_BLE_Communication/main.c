@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <Dist.h>
+#include <math.h>
 
 #include "FFT.h"
 #include "LPF.h"
@@ -9,7 +11,7 @@
 #include "sl_common.h"
 #include "odometry.h"
 #include "MQTTClient.h"
-#include "PID_Motor.h"
+#include "CustomMotor.h"
 #include "../inc/Bump.h"
 #include "../inc/Clock.h"
 #include "../inc/LaunchPad.h"
@@ -17,7 +19,7 @@
 #include "../inc/SysTickInts.h"
 #include "../inc/Reflectance.h"
 #include "../inc/BumpInt.h"
-#include "../inc/Motor.h"
+//#include "../inc/Motor.h"
 #include "../inc/TimerA1.h"
 #include "../inc/I2CB1.h"
 #include "../inc/UART0.h"
@@ -27,9 +29,9 @@
 #include "/Users/mhegde/Downloads/Pitt/Spring 2023/1188/ECE-1188_Hulk-Final-Race/_Wifi_BLE_Communication/Wifi.h"
 
 #define BUFF_SIZE 32
-#define SSID_NAME       "1PittBitt"       /* Access point name to connect to. */
+#define SSID_NAME       "ECE DESIGN LAB 2.4"       /* Access point name to connect to. */
 #define SEC_TYPE        SL_SEC_TYPE_WPA_WPA2     /* Security type of the Access point */
-#define PASSKEY         "b3n3dum!"   /* Password in case of secure AP */
+#define PASSKEY         "ecedesignlab12345"   /* Password in case of secure AP */
 #define PASSKEY_LEN     pal_Strlen(PASSKEY)  /* Password length in case of secure AP */
 #define SL_STOP_TIMEOUT        0xFF
 #define SMALL_BUF           32
@@ -38,15 +40,17 @@
 #define min(X,Y) ((X) < (Y) ? (X) : (Y))
 
 Client hMQTTClient;     // MQTT Client
-uint32_t channel = 1;
+//uint32_t channel = 1;
 int nVal = 0;
 int rc = 0;
+int targetSpeed = 10000;
+int leftSpeed = 0, rightSpeed = 0;
 char* bump_str;
 char input = 'a';
 extern int32_t MyX,MyY;               // position in 0.0001cm
 extern int32_t MyTheta;               // direction units 2*pi/16384 radians (-pi to +pi)
 
-static void Init_Dist();
+//static void I nit_Dist();
 static void sendUpdates();
 static void poll_start();
 static void check_stop();
@@ -62,14 +66,14 @@ struct{
     _i16 SockID;
 }g_AppData;
 
-int32_t Right(int32_t right){
-  return  (right*(59*right + 7305) + 2348974)/32768;
-}
-// left is raw sensor data from left sensor
-// return calibrated distance from center of Robot to left wall
-int32_t Left(int32_t left){
-  return (1247*left)/2048 + 22;
-}
+//int32_t Right(int32_t right){
+//  return  (right*(59*right + 7305) + 2348974)/32768;
+//}
+//// left is raw sensor data from left sensor
+//// return calibrated distance from center of Robot to left wall
+//int32_t Left(int32_t left){
+//  return (1247*left)/2048 + 22;
+//}
 
 // assumes track is 500mm
 int32_t Mode=1; // 0 stop, 1 run
@@ -81,7 +85,7 @@ int32_t SetPoint = 400; // mm       //was 250
 int32_t LeftDistance,CenterDistance,RightDistance; // mm
 #define TOOFAR 400 // was 400. Don't think they actually use this.
 
-#define PWMNOMINAL 6500 // was 2500
+#define PWMNOMINAL 3750 // was 2500
 #define SWING 2000 //was 1000
 #define PWMMIN (PWMNOMINAL-SWING)
 #define PWMMAX (PWMNOMINAL+SWING)
@@ -106,7 +110,7 @@ void Controller(void){ // runs at 100 Hz
     if(UR > (PWMNOMINAL+SWING)) UR = PWMNOMINAL+SWING;
     if(UL < (PWMNOMINAL-SWING)) UL = PWMNOMINAL-SWING; // 3,000 to 7,000
     if(UL > (PWMNOMINAL+SWING)) UL = PWMNOMINAL+SWING;
-    Motor_Forward(UL,UR);
+    setMotorSpeed(UL,UR);
 
   }
 }
@@ -134,7 +138,7 @@ void Controller_Right(void){ // runs at 100 Hz
         UR = PWMNOMINAL;
     }
 
-    Motor_Forward(UL,UR);
+    setMotorSpeed(UL,UR);
 
   }
 }
@@ -162,17 +166,24 @@ void Controller_Left(void){ // runs at 100 Hz
         UL = PWMNOMINAL;
     }
 
-    Motor_Forward(UL,UR);
+    setMotorSpeed(UL,UR);
 
   }
+}
+
+void setCenterSpeed(uint32_t *distances)
+{
+    int newSpeed = targetSpeed * distances[1] / 1000.0;
+    leftSpeed = newSpeed *sin((float)distances[2] * 90.0 / 1000.0 * 0.0174533) * 1.1;
+    rightSpeed = newSpeed *sin((float)distances[0] * 90.0 / 1000.0 * 0.0174533);
 }
 
 int main(int argc, char** argv)
 
 {
-    int i_cont = 0;
+    uint32_t distances[3];
 
-    Motor_Init();
+    motorPWMInit(15000, 0, 0);
 //    PID_Motor_Init(12, 6, 3);
 //    PID_Motor_Target(250, 250);
     Bump_Init();
@@ -181,12 +192,13 @@ int main(int argc, char** argv)
     DisableInterrupts();
     Clock_Init48MHz();
     LaunchPad_Init();
-    Motor_Stop();
+    setMotorSpeed(0,0);
 //    PID_Motor_Stop();
     Odometry_Init(0,0,NORTH); // facing North
 
     Mode = 1;
-    Init_Dist();
+//    Init_Dist();
+    Dist_Init();
 
     UR = UL = PWMNOMINAL;     //initial power
 
@@ -278,59 +290,64 @@ int main(int argc, char** argv)
     while(1){
         check_stop();
 
-        if(TxChannel <= 2){ // 0,1,2 means new data
-          if(TxChannel==0){
-            if(Amplitudes[0] > 1000){
-              LeftDistance = FilteredDistances[0] = Left(LPF_Calc(Distances[0]));
-            }else{
-              LeftDistance = FilteredDistances[0] = 500;
-            }
-          }else if(TxChannel==1){
-            if(Amplitudes[1] > 1000){
-              CenterDistance = FilteredDistances[1] = LPF_Calc2(Distances[1]);
-            }else{
-              CenterDistance = FilteredDistances[1] = 500;
-            }
-          }else {
-            if(Amplitudes[2] > 1000){
-              RightDistance = FilteredDistances[2] = Right(LPF_Calc3(Distances[2]));
-            }else{
-              RightDistance = FilteredDistances[2] = 500;
-            }
-          }
-          TxChannel = 3; // 3 means no data
-          channel = (channel+1)%3;
-          OPT3101_StartMeasurementChannel(channel);
-          i_cont = i_cont + 1;
-        }
-        Controller_Right();
-        //Controller();
-        if(i_cont >= 100){
-            i_cont = 0;
-        }
-
-        WaitForInterrupt();
-
+//        if(TxChannel <= 2){ // 0,1,2 means new data
+//          if(TxChannel==0){
+//            if(Amplitudes[0] > 1000){
+//              LeftDistance = FilteredDistances[0] = Left(LPF_Calc(Distances[0]));
+//            }else{
+//              LeftDistance = FilteredDistances[0] = 500;
+//            }
+//          }else if(TxChannel==1){
+//            if(Amplitudes[1] > 1000){
+//              CenterDistance = FilteredDistances[1] = LPF_Calc2(Distances[1]);
+//            }else{
+//              CenterDistance = FilteredDistances[1] = 500;
+//            }
+//          }else {
+//            if(Amplitudes[2] > 1000){
+//              RightDistance = FilteredDistances[2] = Right(LPF_Calc3(Distances[2]));
+//            }else{
+//              RightDistance = FilteredDistances[2] = 500;
+//            }
+//          }
+//          TxChannel = 3; // 3 means no data
+//          channel = (channel+1)%3;
+//          OPT3101_StartMeasurementChannel(channel);
+//          i_cont = i_cont + 1;
+//        }
+//        Controller_Right();
+//        //Controller();
+//        if(i_cont >= 100){
+//            i_cont = 0;
+//        }
+//
+//        WaitForInterrupt();
+//
+//        UpdatePosition();
+//        sendUpdates();
+        //Delay(10);
+        getDist(distances);
+        setCenterSpeed(distances);
+        setMotorSpeed(leftSpeed, rightSpeed);
         UpdatePosition();
         sendUpdates();
-        Delay(10);
     }
 }
 
-static void Init_Dist() {
-//    SysTick->LOAD = 0x00FFFFFF;           // maximum reload value
-//    SysTick->CTRL = 0x00000005;           // enable SysTick with no interrupts
-    I2CB1_Init(30); // baud rate = 12MHz/30=400kHz
-    OPT3101_Init();
-    OPT3101_Setup();
-    OPT3101_CalibrateInternalCrosstalk();
-    TxChannel = 3;
-    OPT3101_StartMeasurementChannel(channel);
-//    StartTime = SysTick->VAL;
-    LPF_Init(100,8);          // Setup FIR Filter
-    LPF_Init2(100,8);
-    LPF_Init3(100,8);
-}
+//static void Init_Dist() {
+////    SysTick->LOAD = 0x00FFFFFF;           // maximum reload value
+////    SysTick->CTRL = 0x00000005;           // enable SysTick with no interrupts
+//    I2CB1_Init(30); // baud rate = 12MHz/30=400kHz
+//    OPT3101_Init();
+//    OPT3101_Setup();
+//    OPT3101_CalibrateInternalCrosstalk();
+//    TxChannel = 3;
+//    OPT3101_StartMeasurementChannel(channel);
+////    StartTime = SysTick->VAL;
+//    LPF_Init(100,8);          // Setup FIR Filter
+//    LPF_Init2(100,8);
+//    LPF_Init3(100,8);
+//}
 
 static void sendUpdates() {
     rc = MQTTYield(&hMQTTClient, 10);
@@ -359,32 +376,32 @@ static void sendUpdates() {
     else {
         bump_str = ((char*)"Bump!!!");
         sendMessage(bump_str,"MayaNet_Bump");
-        Motor_Stop();
-        Delay(100);
+        setMotorSpeed(0,0);
+        Delay(1000);
     }
 
-    if(pollDistanceSensor())
-    {
-      TimeToConvert = ((StartTime-SysTick->VAL)&0x00FFFFFF)/48000; // msec
-      if(TxChannel <= 2)
-      {
+//    if(pollDistanceSensor())
+//    {
+//      TimeToConvert = ((StartTime-SysTick->VAL)&0x00FFFFFF)/48000; // msec
+//      if(TxChannel <= 2)
+//      {
           sprintf(leftDist, "%d",Distances[0]);
           sprintf(centerDist, "%d", Distances[1]);
           sprintf(rightDist,"%d", Distances[2]);
-      }
-      channel = (channel+1)%3;
-      OPT3101_StartMeasurementChannel(channel);
-      StartTime = SysTick->VAL;
-    }
+//      }
+//      channel = (channel+1)%3;
+//      OPT3101_StartMeasurementChannel(channel);
+//      StartTime = SysTick->VAL;
+//    }
     sprintf(cur_kp,"%d", Kp);
     sprintf(cur_ki,"%d", Ki);
     sprintf(cur_kd,"%d", Kd);
 //    sprintf(set_point,"%d", SetPoint);
 
     Odometry_Get(&MyX,&MyY,&MyTheta);
-    sprintf(x_dist,"%d", MyX);
-    sprintf(y_dist,"%d", MyY);
-    sprintf(theta_val,"%d", MyTheta);
+    sprintf(x_dist,"%d", MyX/1000);
+    sprintf(y_dist,"%d", MyY/1000);
+    sprintf(theta_val,"%f", MyTheta/45.5);
 
     sendMessage(leftDist,"MayaNet_LeftDist");
     sendMessage(centerDist,"MayaNet_CenterDist");
@@ -410,7 +427,10 @@ static void poll_start() {
 static void check_stop() {
     input = UART0_InChar();
     if (input == 's') {
-        while(1){}
+        while(input != 'f'){
+            input = UART0_InChar();
+            setMotorSpeed(0,0);
+        }
     }
     return;
 }

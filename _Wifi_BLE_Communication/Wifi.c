@@ -24,10 +24,12 @@
 #include "/Users/mhegde/Downloads/Pitt/Spring 2023/1188/ECE-1188_Hulk-Final-Race/_Wifi_BLE_Communication/Wifi.h"
 
 
-#define SSID_NAME       "1PittBitt"       /* Access point name to connect to. */
 #define SEC_TYPE        SL_SEC_TYPE_WPA_WPA2     /* Security type of the Access point */
-#define PASSKEY         "b3n3dum!"   /* Password in case of secure AP */
+#define SSID_NAME       "ECE DESIGN LAB 2.4"       /* Access point name to connect to. */
+#define SEC_TYPE        SL_SEC_TYPE_WPA_WPA2     /* Security type of the Access point */
+#define PASSKEY         "ecedesignlab12345"   /* Password in case of secure AP */
 #define PASSKEY_LEN     pal_Strlen(PASSKEY)  /* Password length in case of secure AP */
+
 #define MQTT_BROKER_SERVER  "broker.hivemq.com"
 #define SUBSCRIBE_TOPIC "MayaNet_Sub"
 #define SUBSCRIBE_TOPIC_Ki "MayaNet_SubKi"
@@ -68,11 +70,11 @@ char leftRPM[5];
 char cur_kp[5];
 char cur_ki[5];
 char cur_kd[5];
-char x_dist[5];
-char y_dist[5];
-char theta_val[5];
+char x_dist[10];
+char y_dist[10];
+char theta_val[10];
 
-uint32_t Ki=1;  // integral controller gain
+uint32_t Ki=0.9;  // integral controller gain
 uint32_t Kp = 2;  // proportional controller gain      //was 4
 uint32_t Kd = 0;
 //int32_t SetPoint = 400;
@@ -123,15 +125,15 @@ const Timer_A_UpModeConfig upConfig =
 // Input: array is an array of 16-bit unsigned numbers length is the number of elements in 'array'
 // Output: the average value of the array
 // Note: overflow is not considered
-uint16_t avg(uint16_t *array, int length)
-{
-  int i;
-  uint32_t sum = 0;
-  for(i=0; i<length; i=i+1){
-    sum = sum + array[i];
-  }
-  return (sum/length);
-}
+//uint16_t avg(uint16_t *array, int length)
+//{
+//  int i;
+//  uint32_t sum = 0;
+//  for(i=0; i<length; i=i+1){
+//    sum = sum + array[i];
+//  }
+//  return (sum/length);
+//}
                     // number of elements in tachometer array
 
 uint16_t ActualL;                        // actual rotations per minute measured by tachometer
@@ -158,15 +160,15 @@ uint16_t Average_RPM_R[TACHBUFF];
  * Distance
  */
 
-bool pollDistanceSensor(void)
-{
-  if(OPT3101_CheckDistanceSensor())
-  {
-    TxChannel = OPT3101_GetMeasurement(Distances,Amplitudes);
-    return true;
-  }
-  return false;
-}
+//bool pollDistanceSensor(void)
+//{
+//  if(OPT3101_CheckDistanceSensor())
+//  {
+//    TxChannel = OPT3101_GetMeasurement(Distances,Amplitudes);
+//    return true;
+//  }
+//  return false;
+//}
 /*
  * ASYNCHRONOUS EVENT HANDLERS -- Start
  */
@@ -417,12 +419,12 @@ void messageArrived(MessageData* data) {
 
     if (strcmp(tok,"go") == 0) {
         CLI_Write(" Motor_LeftSimple(5000,200);");
-        Motor_Forward(7500,7500);
+        setMotorSpeed(7500,7500);
     }
 
     if (strcmp(tok,"stop") == 0) {
         CLI_Write(" Motor_StopSimple();");
-        Motor_Stop();  // stop the motors
+        setMotorSpeed(0,0);  // stop the motors
         i = 0;
 
     }

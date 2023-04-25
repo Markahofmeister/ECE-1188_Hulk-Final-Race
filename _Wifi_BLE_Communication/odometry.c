@@ -243,7 +243,7 @@ void WaitUntilBumperTouched(void){uint32_t data;
   }while(data);
 }
 void StopUntilBumperTouched(void){
-  Motor_Stop();
+  setMotorSpeed(0,0);
   Action = ISSTOPPED;
   Display();
   WaitUntilBumperTouched();
@@ -252,31 +252,31 @@ void Forward(void){
   Action = GOFORWARD;
   Blinker_Output(FR_LEFT+FR_RGHT);
   Display();
-  Motor_Forward(MotorFast,MotorFast);  // move
+  setMotorSpeed(MotorFast,MotorFast);  // move
 }
 void HardLeft(void){
   Action = HARDLEFT;
   Blinker_Output(FR_LEFT+BK_LEFT);
   Display();
-  Motor_Left(MotorSlow,MotorSlow);  // left
+  setMotorSpeed(MotorSlow,MotorSlow);  // left
 }
 void HardRight(void){
   Action = HARDRIGHT;
   Blinker_Output(FR_RGHT+BK_RGHT);
   Display();
-  Motor_Right(MotorSlow,MotorSlow);  // right
+  setMotorSpeed(MotorSlow,MotorSlow);  // right
 }
 void SoftLeft(void){
   Action = SOFTLEFT;
   Blinker_Output(FR_LEFT+BK_LEFT);
   Display();
-  Motor_Forward(0,MotorSlow);  // left
+  setMotorSpeed(0,MotorSlow);  // left
 }
 void SoftRight(void){
   Action = SOFTRIGHT;
   Blinker_Output(FR_RGHT+BK_RGHT);
   Display();
-  Motor_Forward(MotorSlow,0);  // right
+  setMotorSpeed(MotorSlow,0);  // right
 }
 uint32_t ForwardUntilCrash(void){uint32_t data;
   Forward();
@@ -428,7 +428,7 @@ uint32_t  ForwardUntilThStatus(void){uint32_t data;
 
 uint32_t CheckGoal(void){
   if(Goal==STOP){
-    Motor_Stop(); return 1;
+    setMotorSpeed(); return 1;
   }
   if(Goal==FORWARDTOX){
     return ForwardUntilXStatus();
