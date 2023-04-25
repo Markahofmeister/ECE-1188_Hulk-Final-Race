@@ -10,8 +10,11 @@
 
 int targetSpeed = 10000;
 int leftSpeed = 0, rightSpeed = 0;
-#define cornerDist 800
+#define cornerDistForward 900
+#define cornerDistSides 900
+#define leftThresh 100
 uint8_t lap = 1;
+uint32_t lastDistance = 1000;
 
 void setCenterSpeedRight(uint32_t *distances)
 {
@@ -44,7 +47,7 @@ int main()
     {
 
 
-        switch(lap) {
+        /*switch(lap) {
 
             case 1:
 
@@ -83,11 +86,22 @@ int main()
 
             break;
 
+        }*/
+
+        getDist(distances);
+        uint32_t leftDiff = distances[0] - lastDistance;
+        if(distances[1] < cornerDistForward || (leftDiff > leftThresh && distances[2] > cornerDistSides)) {
+            setCenterSpeedRight(distances);
+            LaunchPad_Output(0x01);
+        }
+        else {
+            setCenterSpeedLeft(distances);
+            LaunchPad_Output(0x04);
         }
 
-        /*getDist(distances);
-        setCenterSpeedRight(distances);
-        setMotorSpeed(leftSpeed, rightSpeed);*/
+        setMotorSpeed(leftSpeed, rightSpeed);
+
+        lastDistance = distances[0];
 
     }
 
