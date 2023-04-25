@@ -32,20 +32,20 @@ uint32_t avg(uint32_t *array, int length)
 
 void setCenterSpeedRight(uint32_t *distances)
 {
-    uint16_t speedThresh = 7000;
+    uint16_t speedThresh = 2000;
     float newSpeed = targetSpeed * ((float)distances[1] / (float)divideValue);
-    leftSpeed = newSpeed * (sin((float)distances[2] * 90.0 / divideValue * 0.0174533)+0.2) * 1.5;
+    leftSpeed = newSpeed * (sin((float)distances[2] * 90.0 / divideValue * 0.0174533) + 0.2) * 1.1;
     if(leftSpeed < speedThresh) {
         leftSpeed = speedThresh;
     }
-    rightSpeed = newSpeed * (sin((float)distances[0] * 90.0 / divideValue * 0.0174533)+0.2);
+    rightSpeed = newSpeed * (sin((float)distances[0] * 90.0 / divideValue * 0.0174533) + 0.2);
     if(rightSpeed < speedThresh) {
         rightSpeed = speedThresh;
     }
 }
 void setCenterSpeedLeft(uint32_t *distances)
 {
-    uint16_t speedThresh = 5000;
+    uint16_t speedThresh = 2000;
     float newSpeed = targetSpeed * ((float)distances[1] / (float)divideValue);
     leftSpeed = newSpeed * (sin((float)distances[2] * 90.0 / divideValue * 0.0174533)+0.2);
     if(leftSpeed < speedThresh) {
@@ -87,9 +87,9 @@ int main()
         getDist(distances);
 
         uint32_t hallwayWidth = distances[0] + distances[2];
-        if(hallwayWidth < 1300) {
-            divideValue = 1000;
-            setMaxDist(1000);
+        if(hallwayWidth < 1100) {
+            divideValue = 600;
+            setMaxDist(600);
         }
         else {
             divideValue = 1800;
@@ -107,7 +107,7 @@ int main()
             }
             i=-1;
         }
-        //uint32_t leftDiff = distances[0] - lastDistance;
+
         if(distances[1] < cornerDistForward || (leftDiff > leftThresh && distances[2] > cornerDistSides)) {
             setCenterSpeedRight(distances);
             LaunchPad_Output(0x01);
@@ -136,14 +136,11 @@ void PORT4_IRQHandler(void){            // Deal with Crashes
     setMotorSpeed(0,0);
     Clock_Delay1ms(1000);         // Must wait 1 second, as per project requirements
     LaunchPad_Output(0x02);
-    uint8_t bump_input = BumpInt_Read();
-    //getDist(distances);
-    //if (distances[2] < distances[0] && distances[2] < divideValue) {
-       setMotorSpeed(-1000, -10000);
-    //}
-    //else {
-       // setMotorSpeed(-1000, -5000);
-    //}
+    uint8_t bumpInput = BumpInt_Read();
+
+    //if((bumpInput &  )
+    setMotorSpeed(-1000, -10000);    //back up right
+
 
     Clock_Delay1ms(250);
 
