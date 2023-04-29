@@ -14,6 +14,7 @@ ORDERED_OBJS += \
 "./ADCTA0Trigger.obj" \
 "./AP.obj" \
 "./Bump.obj" \
+"./BumpInt.obj" \
 "./Clock.obj" \
 "./CortexM.obj" \
 "./EUSCIA0.obj" \
@@ -198,8 +199,8 @@ inc.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "ADC14.obj" "ADCTA0Trigger.obj" "AP.obj" "Bump.obj" "Clock.obj" "CortexM.obj" "EUSCIA0.obj" "FFT.obj" "FIFO0.obj" "FlashProgram.obj" "Fuzzy.obj" "GPIO.obj" "HDC2080.obj" "I2CB1.obj" "IRDistance.obj" "LPF.obj" "LaunchPad.obj" "Motor.obj" "MotorSimple.obj" "Nokia5110.obj" "OPT3001.obj" "PWM.obj" "Reflectance.obj" "SSD1306.obj" "Switch.obj" "SysTick.obj" "TA3InputCapture.obj" "TExaS.obj" "TMP117.obj" "Tachometer.obj" "TimerA0.obj" "TimerA1.obj" "TimerA2.obj" "UART0.obj" "UART1.obj" "Ultrasound.obj" "blinker.obj" "bmi160.obj" "bmm150.obj" "fixed.obj" "incmain.obj" "odometry.obj" "opt3101.obj" "startup_msp432p401r_ccs.obj" "system_msp432p401r.obj" 
-	-$(RM) "ADC14.d" "ADCTA0Trigger.d" "AP.d" "Bump.d" "Clock.d" "CortexM.d" "EUSCIA0.d" "FFT.d" "FIFO0.d" "FlashProgram.d" "Fuzzy.d" "GPIO.d" "HDC2080.d" "I2CB1.d" "IRDistance.d" "LPF.d" "LaunchPad.d" "Motor.d" "MotorSimple.d" "Nokia5110.d" "OPT3001.d" "PWM.d" "Reflectance.d" "SSD1306.d" "Switch.d" "SysTick.d" "TA3InputCapture.d" "TExaS.d" "TMP117.d" "Tachometer.d" "TimerA0.d" "TimerA1.d" "TimerA2.d" "UART0.d" "UART1.d" "Ultrasound.d" "blinker.d" "bmi160.d" "bmm150.d" "fixed.d" "incmain.d" "odometry.d" "opt3101.d" "startup_msp432p401r_ccs.d" "system_msp432p401r.d" 
+	-$(RM) "ADC14.obj" "ADCTA0Trigger.obj" "AP.obj" "Bump.obj" "BumpInt.obj" "Clock.obj" "CortexM.obj" "EUSCIA0.obj" "FFT.obj" "FIFO0.obj" "FlashProgram.obj" "Fuzzy.obj" "GPIO.obj" "HDC2080.obj" "I2CB1.obj" "IRDistance.obj" "LPF.obj" "LaunchPad.obj" "Motor.obj" "MotorSimple.obj" "Nokia5110.obj" "OPT3001.obj" "PWM.obj" "Reflectance.obj" "SSD1306.obj" "Switch.obj" "SysTick.obj" "TA3InputCapture.obj" "TExaS.obj" "TMP117.obj" "Tachometer.obj" "TimerA0.obj" "TimerA1.obj" "TimerA2.obj" "UART0.obj" "UART1.obj" "Ultrasound.obj" "blinker.obj" "bmi160.obj" "bmm150.obj" "fixed.obj" "incmain.obj" "odometry.obj" "opt3101.obj" "startup_msp432p401r_ccs.obj" "system_msp432p401r.obj" 
+	-$(RM) "ADC14.d" "ADCTA0Trigger.d" "AP.d" "Bump.d" "BumpInt.d" "Clock.d" "CortexM.d" "EUSCIA0.d" "FFT.d" "FIFO0.d" "FlashProgram.d" "Fuzzy.d" "GPIO.d" "HDC2080.d" "I2CB1.d" "IRDistance.d" "LPF.d" "LaunchPad.d" "Motor.d" "MotorSimple.d" "Nokia5110.d" "OPT3001.d" "PWM.d" "Reflectance.d" "SSD1306.d" "Switch.d" "SysTick.d" "TA3InputCapture.d" "TExaS.d" "TMP117.d" "Tachometer.d" "TimerA0.d" "TimerA1.d" "TimerA2.d" "UART0.d" "UART1.d" "Ultrasound.d" "blinker.d" "bmi160.d" "bmm150.d" "fixed.d" "incmain.d" "odometry.d" "opt3101.d" "startup_msp432p401r_ccs.d" "system_msp432p401r.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

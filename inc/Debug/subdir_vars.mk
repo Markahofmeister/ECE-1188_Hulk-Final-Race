@@ -16,6 +16,7 @@ C_SRCS += \
 ../ADCTA0Trigger.c \
 ../AP.c \
 ../Bump.c \
+../BumpInt.c \
 ../Clock.c \
 ../CortexM.c \
 ../EUSCIA0.c \
@@ -63,6 +64,7 @@ C_DEPS += \
 ./ADCTA0Trigger.d \
 ./AP.d \
 ./Bump.d \
+./BumpInt.d \
 ./Clock.d \
 ./CortexM.d \
 ./EUSCIA0.d \
@@ -110,6 +112,7 @@ OBJS += \
 ./ADCTA0Trigger.obj \
 ./AP.obj \
 ./Bump.obj \
+./BumpInt.obj \
 ./Clock.obj \
 ./CortexM.obj \
 ./EUSCIA0.obj \
@@ -157,6 +160,7 @@ OBJS__QUOTED += \
 "ADCTA0Trigger.obj" \
 "AP.obj" \
 "Bump.obj" \
+"BumpInt.obj" \
 "Clock.obj" \
 "CortexM.obj" \
 "EUSCIA0.obj" \
@@ -204,6 +208,7 @@ C_DEPS__QUOTED += \
 "ADCTA0Trigger.d" \
 "AP.d" \
 "Bump.d" \
+"BumpInt.d" \
 "Clock.d" \
 "CortexM.d" \
 "EUSCIA0.d" \
@@ -251,6 +256,7 @@ C_SRCS__QUOTED += \
 "../ADCTA0Trigger.c" \
 "../AP.c" \
 "../Bump.c" \
+"../BumpInt.c" \
 "../Clock.c" \
 "../CortexM.c" \
 "../EUSCIA0.c" \

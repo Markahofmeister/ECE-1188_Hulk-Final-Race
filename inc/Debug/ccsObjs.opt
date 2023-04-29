@@ -2,6 +2,7 @@
 "./ADCTA0Trigger.obj"
 "./AP.obj"
 "./Bump.obj"
+"./BumpInt.obj"
 "./Clock.obj"
 "./CortexM.obj"
 "./EUSCIA0.obj"
